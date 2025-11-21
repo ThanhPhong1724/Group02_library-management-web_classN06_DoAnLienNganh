@@ -347,7 +347,7 @@ library-system/
 
 | Trang chủ | Quản lý sách | Dashboard Admin |
 |-----------|--------------|-----------------|
-| ![Homepage](docs/screenshots/homepage.png) | ![Books](docs/screenshots/books.png) | ![Dashboard](docs/screenshots/dashboard.png) |
+| ![Homepage](library-system/docs/screenshots/homepage.png) | ![Books](library-system/docs/screenshots/books.png) | ![Dashboard](library-system/docs/screenshots/dashboard.png) |
 
 ---
 
