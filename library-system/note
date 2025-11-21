@@ -1,0 +1,28 @@
+Lệnh chạy server (PowerShell – Windows)
+Vào đúng thư mục backend:
+cd /d D:\WEB_QUAN_LI_THU_VIEN_PYTHON\library-system\backend
+cd library-system\backend
+
+Tạo venv và cài dependency (1 lần đầu):
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+Chạy server:
+python -m venv .venv
+cd D:\WEB_QUAN_LI_THU_VIEN_PYTHON\library-system\backend
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+@REM uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+(Không muốn activate venv: dùng lệnh này)
+.\.venv\Scripts\uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+cd D:\WEB_QUAN_LI_THU_VIEN_PYTHON\library-system\frontend
+cd library-system\frontend
+npm run dev
+
+
+admin@gmail.com
+123456

@@ -1,0 +1,53 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+autonumber
+
+actor User
+participant "Frontend\n(Next.js)" as Frontend
+participant "Auth Router\n(/api/auth)" as AuthRouter
+participant "AuthService" as AuthService
+participant "Database\n(MySQL)" as DB
+
+User -> Frontend: Nhập email và password
+Frontend -> AuthRouter: POST /api/auth/login\n{email, password}
+AuthRouter -> DB: SELECT user WHERE email
+DB --> AuthRouter: User data
+AuthRouter -> AuthService: verify_password(plain, hash)
+AuthService --> AuthRouter: true/false
+
+alt Mật khẩu đúng
+    AuthRouter -> AuthService: create_access_token(user_id, role, user_type)
+    AuthService -> AuthService: Tạo JWT payload
+    AuthService --> AuthRouter: access_token
+    AuthRouter -> AuthService: create_refresh_token(user_id, role, user_type)
+    AuthService --> AuthRouter: refresh_token
+    AuthRouter --> Frontend: {access_token, refresh_token}
+    Frontend -> Frontend: Lưu token vào localStorage
+    Frontend -> AuthRouter: GET /api/auth/me\n(Header: Bearer token)
+    AuthRouter -> DB: SELECT user WHERE id
+    DB --> AuthRouter: User info
+    AuthRouter --> Frontend: {id, email, full_name, role, user_type}
+    Frontend -> Frontend: Lưu user info vào context
+    alt Role = admin
+        Frontend -> Frontend: Redirect to /admin
+    else Role = user
+        Frontend -> Frontend: Redirect to /
+    end
+    Frontend --> User: Hiển thị trang chủ/Dashboard
+else Mật khẩu sai hoặc user không tồn tại
+    AuthRouter --> Frontend: 400 Error\n{INVALID_CREDENTIALS}
+    Frontend --> User: Hiển thị thông báo lỗi
+end
+
+@enduml

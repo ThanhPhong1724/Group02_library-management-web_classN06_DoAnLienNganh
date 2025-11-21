@@ -1,0 +1,106 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+
+autonumber
+
+actor User
+participant "Frontend" as Frontend
+participant "Loans Router" as LoanRouter
+participant "LoanService" as LoanService
+participant "Policy" as Policy
+participant "Database" as DB
+participant "NotificationService" as NotifService
+actor Admin
+
+== User yêu cầu trả sách ==
+User -> Frontend: Xem danh sách phiếu mượn
+Frontend -> LoanRouter: GET /api/me/loans\n(Header: Bearer token)
+LoanRouter -> DB: SELECT loans WHERE user_id\nAND status='borrowed'
+DB --> LoanRouter: User's loans
+LoanRouter --> Frontend: Loans list
+Frontend --> User: Hiển thị danh sách
+
+User -> Frontend: Click "Yêu cầu trả sách" trên một phiếu
+Frontend -> LoanRouter: POST /api/loans/{loan_id}/request-return
+LoanRouter -> DB: SELECT loan WHERE id = loan_id\nAND user_id = current_user
+DB --> LoanRouter: Loan data
+
+alt Loan không tồn tại hoặc không ở trạng thái 'borrowed'
+    LoanRouter --> Frontend: 400 Error\n{BAD_STATE}
+    Frontend --> User: Thông báo lỗi
+else
+    LoanRouter -> DB: UPDATE phieu_muon SET\nstatus='return_requested',\nyeu_cau_tra_luc=NOW()
+    DB --> LoanRouter: Loan updated
+    LoanRouter -> DB: COMMIT
+    
+    LoanRouter -> NotifService: Gửi thông báo cho admin
+    NotifService -> DB: SELECT users WHERE vai_tro='admin'
+    DB --> NotifService: Admin list
+    loop Cho mỗi admin
+        NotifService -> DB: INSERT INTO thong_bao\n(return_request, title, body)
+    end
+    DB --> NotifService: Notifications created
+    
+    LoanRouter --> Frontend: {id, status: 'return_requested'}
+    Frontend --> User: Thông báo thành công
+end
+
+== Admin duyệt trả sách ==
+Admin -> Frontend: Xem yêu cầu trả sách
+Frontend -> LoanRouter: GET /api/admin/loans?status=return_requested
+LoanRouter -> DB: SELECT loans WHERE status='return_requested'
+DB --> LoanRouter: Return requests
+LoanRouter --> Frontend: List
+Frontend --> Admin: Hiển thị danh sách
+
+Admin -> Frontend: Click "Duyệt trả"
+Frontend -> LoanRouter: POST /api/admin/loans/{loan_id}/approve-return
+
+LoanRouter -> DB: SELECT loan, copy, user WHERE loan_id
+DB --> LoanRouter: Loan, Copy, User data
+
+LoanRouter -> LoanService: Kiểm tra ngày trả vs hạn trả
+LoanService -> LoanService: Tính số ngày trễ
+
+alt tra_luc > han_tra (trả trễ)
+    LoanService -> Policy: Lấy phạt mỗi ngày
+    Policy -> DB: SELECT policy WHERE loai_nguoi_dung
+    DB --> Policy: Policy data (phat_moi_ngay)
+    Policy --> LoanService: fine_per_day
+    
+    LoanService -> LoanService: Tính tiền phạt\n= days_late × fine_per_day
+    LoanService -> DB: UPDATE phieu_muon SET\nstatus='returned',\ntra_luc=NOW(),\nso_tien_phat=calculated_fine,\nnoi_dung_phat='Trả trễ X ngày'
+else
+    LoanService -> DB: UPDATE phieu_muon SET\nstatus='returned',\ntra_luc=NOW(),\nso_tien_phat=0
+end
+
+DB --> LoanService: Loan updated
+LoanService -> DB: UPDATE ban_sao SET trang_thai='available'
+DB --> LoanService: Copy updated
+LoanService -> DB: COMMIT
+LoanService --> LoanRouter: Success
+
+alt Có tiền phạt
+    LoanRouter -> NotifService: Gửi thông báo phạt cho user
+    NotifService -> DB: INSERT INTO thong_bao\n(loan_fined, title, body với số tiền phạt)
+else
+    LoanRouter -> NotifService: Gửi thông báo trả sách thành công
+    NotifService -> DB: INSERT INTO thong_bao\n(loan_returned, title, body)
+end
+DB --> NotifService: Notification created
+
+LoanRouter --> Frontend: {id, status: 'returned'}
+Frontend --> Admin: Thông báo thành công
+
+@enduml

@@ -1,0 +1,173 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="use-case-settings" name="Use-case Cài đặt hệ thống">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Actors -->
+        <mxCell id="actor-admin" value="Quản trị viên&#xa;(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="400" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System boundary -->
+        <mxCell id="system-boundary" value="Hệ thống Quản lý Thư viện" style="swimlane;html=1;startSize=20;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="200" width="800" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Use cases -->
+        <mxCell id="uc-view-settings" value="Xem cài đặt hệ thống" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-update-settings" value="Cập nhật cài đặt" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-manage-policies" value="Quản lý chính sách mượn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-manage-rules" value="Quản lý nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-view-policy" value="Xem chính sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-update-policy" value="Cập nhật chính sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-list-rules" value="Xem danh sách nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-create-rule" value="Thêm nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-update-rule" value="Sửa nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-delete-rule" value="Xóa nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-validate-settings" value="Kiểm tra dữ liệu cài đặt" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-validate-policy" value="Kiểm tra dữ liệu chính sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-validate-rule" value="Kiểm tra dữ liệu nội quy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="380" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships -->
+        <mxCell id="rel-admin-view-settings" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-view-settings">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-update-settings" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-update-settings">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-manage-policies" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-manage-policies">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-manage-rules" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-manage-rules">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-view-policy" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-view-policy">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-update-policy" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-update-policy">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-list-rules" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-list-rules">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-create-rule" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-create-rule">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-update-rule" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-update-rule">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-delete-rule" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-delete-rule">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Include relationships -->
+        <mxCell id="include-view-policy-manage"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0;exitY=0.5;exitDx=0;exitDy=0;
+                        entryX=0;entryY=0.5;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-manage-policies" target="uc-view-policy">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-validate-settings-update"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-update-settings" target="uc-validate-settings">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-validate-policy-update"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-update-policy" target="uc-validate-policy">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-validate-rule-create"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-create-rule" target="uc-validate-rule">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-validate-rule-update"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-update-rule" target="uc-validate-rule">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-list-rules-manage"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0;exitY=0.5;exitDx=0;exitDy=0;
+                        entryX=0;entryY=0.5;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-manage-rules" target="uc-list-rules">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

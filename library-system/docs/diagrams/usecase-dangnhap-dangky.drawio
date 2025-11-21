@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="use-case-auth" name="Use-case Đăng nhập và Đăng ký">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Actors -->
+        <mxCell id="actor-user" value="Người dùng&#xa;(User)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-admin" value="Quản trị viên&#xa;(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="500" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System boundary -->
+        <mxCell id="system-boundary" value="Hệ thống Quản lý Thư viện" style="swimlane;html=1;startSize=20;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="200" width="700" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Use cases -->
+        <mxCell id="uc-register" value="Đăng ký tài khoản" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-login" value="Đăng nhập" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-logout" value="Đăng xuất" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-view-profile" value="Xem hồ sơ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-update-profile" value="Cập nhật hồ sơ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-refresh-token" value="Làm mới token" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-validate-email" value="Kiểm tra email trùng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-hash-password" value="Mã hóa mật khẩu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-verify-password" value="Xác thực mật khẩu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="380" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-generate-token" value="Tạo JWT token" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="380" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships -->
+        <mxCell id="rel-user-register" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-register">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-login" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-login">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-logout" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-logout">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-view-profile" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-view-profile">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-update-profile" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-update-profile">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-login" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-login">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-logout" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-logout">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Include relationships -->
+        <mxCell id="include-validate-email-register"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-register" target="uc-validate-email">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-hash-password-register"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-register" target="uc-hash-password">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-verify-password-login"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-login" target="uc-verify-password">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-generate-token-login"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-login" target="uc-generate-token">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-view-profile-update"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0;exitY=0.5;exitDx=0;exitDy=0;
+                        entryX=0;entryY=0.5;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-update-profile" target="uc-view-profile">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Extend relationships -->
+        <mxCell id="extend-refresh-token-login"
+                value="&lt;&lt;extend&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=0;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=1;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-refresh-token" target="uc-login">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,61 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+title Biểu đồ tuần tự cho Use-case Tương tác chatbot tra cứu sách
+
+autonumber
+
+actor User
+participant "ChatWidget" as ChatWidget
+participant "Chatbot Service\n(Botpress)" as ChatbotService
+participant "Library API\n(/api/books)" as LibraryAPI
+database "Database\n(MySQL)" as DB
+
+User -> ChatWidget: Gửi câu hỏi tìm sách\n"Tìm sách về Python"
+activate ChatWidget
+
+ChatWidget -> ChatbotService: Gửi message\n{text: "Tìm sách về Python", user_id}
+activate ChatbotService
+
+ChatbotService -> ChatbotService: Phân tích intent\nvà extract keywords
+note right: Intent: search_books\nKeywords: "Python"
+
+ChatbotService -> LibraryAPI: GET /api/books\n?search=Python&page=1&limit=10
+activate LibraryAPI
+
+LibraryAPI -> DB: SELECT s.*, nxb.ten, COUNT(*) OVER() as total\nFROM sach s\nLEFT JOIN nha_xuat_ban nxb\nWHERE (LOWER(tieu_de) LIKE '%python%'\n  OR LOWER(tac_gia) LIKE '%python%')\nLIMIT 10 OFFSET 0
+activate DB
+
+DB --> LibraryAPI: Danh sách sách\n(id, title, authors, publisher, total, ...)
+deactivate DB
+
+LibraryAPI -> DB: SELECT url_anh FROM anh_sach\nWHERE id_sach IN (...) AND la_anh_dai_dien=1
+activate DB
+DB --> LibraryAPI: Primary images
+deactivate DB
+
+LibraryAPI --> ChatbotService: JSON Response\n{\n  items: [BookListItem],\n  page: 1,\n  limit: 10,\n  total: 15\n}
+deactivate LibraryAPI
+
+ChatbotService -> ChatbotService: Format response\nthành câu trả lời tự nhiên
+note right: "Tôi tìm thấy 15 cuốn sách về Python.\nDưới đây là 10 cuốn đầu tiên:\n\n1. Python Programming - Tác giả: ...\n2. Learn Python - Tác giả: ...\n..."
+
+ChatbotService --> ChatWidget: Response message\n{\n  text: "Tôi tìm thấy 15 cuốn sách...",\n  books: [BookListItem],\n  type: "book_list"\n}
+deactivate ChatbotService
+
+ChatWidget -> User: Hiển thị câu trả lời\nvà danh sách sách
+note right: Hiển thị:\n- Text: "Tôi tìm thấy 15 cuốn sách về Python"\n- Danh sách sách với ảnh bìa\n- Nút "Xem thêm" nếu có nhiều kết quả
+
+deactivate ChatWidget
+
+@enduml

@@ -1,0 +1,64 @@
+@startuml
+!theme plain
+
+class Book {
+  -BigInteger id
+  -Text tieu_de
+  -Text tieu_de_phu
+  -Text tac_gia
+  -BigInteger id_nxb
+  -Integer nam_xb
+  -String ngon_ngu
+  -Text the_loai
+  -Text mo_ta
+  -DECIMAL gia_bia
+  -String don_vi_tien
+  -Integer so_luong_tong
+  -Integer so_luong_con
+}
+
+class Publisher {
+  -BigInteger id
+  -String ten
+  -String dia_chi
+  -String website
+  -Text ghi_chu
+}
+
+class BookImage {
+  -BigInteger id
+  -BigInteger id_sach
+  -Text url_anh
+  -Boolean la_anh_dai_dien
+  -Integer thu_tu
+}
+
+class Copy {
+  -BigInteger id
+  -BigInteger id_sach
+  -String ma_ban_sao
+  -BigInteger id_vi_tri
+  -Enum trang_thai
+}
+
+class Location {
+  -BigInteger id
+  -String ma_ke
+  -String tang
+  -String phong
+  -String ke
+  -String hang
+  -String cot
+}
+
+Book "1" --> "*" Copy : có bản sao
+Book "1" --> "*" BookImage : có ảnh
+Book "n" --> "1" Publisher : thuộc NXB
+Copy "n" --> "1" Location : ở vị trí
+
+note right of Book
+  Số lượng tự động cập nhật
+  qua triggers khi thêm/sửa/xóa Copy
+end note
+
+@enduml

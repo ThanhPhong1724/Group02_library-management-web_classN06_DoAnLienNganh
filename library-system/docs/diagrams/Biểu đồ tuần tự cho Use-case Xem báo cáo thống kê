@@ -1,0 +1,57 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+autonumber
+
+actor Admin
+participant "Frontend Admin" as Frontend
+participant "Reports Router\n(/api/admin/reports)" as ReportRouter
+participant "Database" as DB
+
+Admin -> Frontend: Vào trang báo cáo
+Frontend -> ReportRouter: GET /api/admin/reports/overview
+ReportRouter -> DB: SELECT COUNT(*) FROM sach
+DB --> ReportRouter: total_books
+ReportRouter -> DB: SELECT COUNT(*) FROM ban_sao
+DB --> ReportRouter: total_copies
+ReportRouter -> DB: SELECT COUNT(*) FROM nguoi_dung
+DB --> ReportRouter: total_users
+ReportRouter -> DB: SELECT COUNT(*) FROM phieu_muon
+DB --> ReportRouter: total_loans
+ReportRouter -> DB: SELECT COUNT(*) FROM phieu_muon WHERE status='returned'
+DB --> ReportRouter: total_returns
+ReportRouter -> DB: SELECT COUNT(*) FROM phieu_muon WHERE status='overdue'
+DB --> ReportRouter: total_overdue
+
+ReportRouter -> ReportRouter: Tính tổng tiền phạt\n(Lặp qua các loan quá hạn/trả trễ,\ntính số ngày trễ × phạt mỗi ngày theo Policy)
+ReportRouter --> Frontend: {total_books, total_copies, total_users,\ntotal_loans, total_returns, total_overdue, total_fines}
+Frontend --> Admin: Hiển thị tổng quan
+
+Admin -> Frontend: Chọn "Top sách mượn nhiều"
+Frontend -> ReportRouter: GET /api/admin/reports/top-books?from=...&to=...&limit=10
+ReportRouter -> DB: SELECT book_id, COUNT(loan_id) as loan_count\nFROM loans JOIN copies ON loans.id_ban_sao = copies.id\nWHERE muon_luc BETWEEN from AND to\nGROUP BY book_id\nORDER BY loan_count DESC\nLIMIT 10
+DB --> ReportRouter: Top books data
+ReportRouter --> Frontend: [{id, title, authors, loan_count}, ...]
+Frontend --> Admin: Hiển thị biểu đồ/bảng top sách
+
+Admin -> Frontend: Chọn "Thống kê mượn/trả theo tháng"
+Frontend -> ReportRouter: GET /api/admin/reports/loans-by-month?from=...&to=...
+ReportRouter -> DB: SELECT DATE_FORMAT(muon_luc, '%Y-%m') as month,\nCOUNT(*) as borrow_count\nFROM phieu_muon\nWHERE muon_luc BETWEEN from AND to\nGROUP BY month
+DB --> ReportRouter: Borrow by month
+ReportRouter -> DB: SELECT DATE_FORMAT(tra_luc, '%Y-%m') as month,\nCOUNT(*) as return_count\nFROM phieu_muon\nWHERE tra_luc BETWEEN from AND to\nGROUP BY month
+DB --> ReportRouter: Return by month
+ReportRouter -> ReportRouter: Gộp dữ liệu mượn và trả theo tháng
+ReportRouter --> Frontend: [{month, borrow_count, return_count}, ...]
+Frontend --> Admin: Hiển thị biểu đồ đường mượn/trả theo tháng
+
+@enduml

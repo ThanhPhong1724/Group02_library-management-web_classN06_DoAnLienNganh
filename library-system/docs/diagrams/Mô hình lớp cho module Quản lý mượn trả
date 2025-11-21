@@ -1,0 +1,60 @@
+@startuml
+!theme plain
+
+class Loan {
+  -BigInteger id
+  -BigInteger id_ban_sao
+  -BigInteger id_nguoi_dung
+  -Enum trang_thai
+  -DateTime muon_luc
+  -DateTime han_tra
+  -DateTime tra_luc
+  -Numeric so_tien_phat
+  -Text noi_dung_phat
+  -Boolean da_nop_phat
+}
+
+class Copy {
+  -BigInteger id
+  -BigInteger id_sach
+  -String ma_ban_sao
+  -Enum trang_thai
+}
+
+class User {
+  -BigInteger id
+  -String email
+  -Enum loai_nguoi_dung
+  -Boolean hoat_dong
+}
+
+class Policy {
+  -Enum loai_nguoi_dung
+  -Integer toi_da_muon
+  -Integer so_ngay_muon
+  -Numeric phat_moi_ngay
+  -Integer so_lan_gia_han
+}
+
+class Book {
+  -BigInteger id
+  -Text tieu_de
+}
+
+Loan "n" --> "1" Copy : mượn bản sao
+Loan "n" --> "1" User : người mượn
+Loan "n" --> "1" Policy : áp dụng chính sách
+Copy "n" --> "1" Book : thuộc sách
+
+note right of Loan
+  Trạng thái: requested, rejected,
+  borrowed, return_requested,
+  returned, overdue
+end note
+
+note right of Policy
+  Chính sách khác nhau
+  theo loại người dùng
+end note
+
+@enduml

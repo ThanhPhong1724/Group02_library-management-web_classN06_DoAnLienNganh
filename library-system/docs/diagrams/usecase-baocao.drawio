@@ -1,0 +1,197 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="use-case-reports" name="Use-case Báo cáo thống kê">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Actors -->
+        <mxCell id="actor-admin" value="Quản trị viên&#xa;(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="400" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System boundary -->
+        <mxCell id="system-boundary" value="Hệ thống Quản lý Thư viện" style="swimlane;html=1;startSize=20;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="200" width="800" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Use cases -->
+        <mxCell id="uc-view-overview" value="Xem tổng quan thống kê" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-top-books" value="Xem top sách mượn nhiều" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-top-users" value="Xem top người dùng mượn nhiều" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-top-overdue" value="Xem top sách quá hạn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-fines-report" value="Xem báo cáo tiền phạt" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-loans-by-month" value="Xem thống kê mượn/trả theo tháng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-export-report" value="Xuất báo cáo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-filter-by-date" value="Lọc theo thời gian" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-aggregate-data" value="Tổng hợp dữ liệu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-calculate-statistics" value="Tính toán thống kê" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-generate-chart" value="Tạo biểu đồ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships -->
+        <mxCell id="rel-admin-overview" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-view-overview">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-top-books" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-top-books">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-top-users" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-top-users">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-top-overdue" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-top-overdue">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-fines" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-fines-report">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-loans-month" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-loans-by-month">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-export" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-export-report">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Include relationships -->
+        <mxCell id="include-filter-overview"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-view-overview" target="uc-filter-by-date">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-aggregate-overview"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-view-overview" target="uc-aggregate-data">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-calculate-overview"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-view-overview" target="uc-calculate-statistics">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-filter-top-books"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-top-books" target="uc-filter-by-date">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-calculate-top-books"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-top-books" target="uc-calculate-statistics">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-generate-chart-top-books"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-top-books" target="uc-generate-chart">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-filter-loans-month"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-loans-by-month" target="uc-filter-by-date">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-aggregate-loans-month"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-loans-by-month" target="uc-aggregate-data">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-generate-chart-loans-month"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-loans-by-month" target="uc-generate-chart">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

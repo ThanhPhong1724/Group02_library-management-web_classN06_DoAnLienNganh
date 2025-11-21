@@ -1,0 +1,221 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+package "Authentication Module" {
+  class User {
+    -BigInteger id
+    -String email
+    -String mat_khau_hash
+    -String ho_ten
+    -Enum vai_tro
+    -Enum loai_nguoi_dung
+    -Boolean hoat_dong
+    -DateTime tao_luc
+    -String so_dien_thoai
+    -String dia_chi
+  }
+  
+  class AuthService {
+    +hash_password(password: str): str
+    +verify_password(plain: str, hash: str): bool
+    +create_access_token(user_id, role, user_type): str
+    +create_refresh_token(user_id, role, user_type): str
+    +decode_token(token: str): dict
+  }
+  
+  class CurrentUser {
+    +int user_id
+    +str role
+    +str email
+    +str user_type
+    +str full_name
+  }
+}
+
+package "Book Management Module" {
+  class Book {
+    -BigInteger id
+    -Text tieu_de
+    -Text tieu_de_phu
+    -Text tac_gia
+    -BigInteger id_nxb
+    -Integer nam_xb
+    -String ngon_ngu
+    -Text the_loai
+    -Text mo_ta
+    -DECIMAL gia_bia
+    -String don_vi_tien
+    -Integer so_luong_tong
+    -Integer so_luong_con
+    +relationship publisher
+  }
+  
+  class Publisher {
+    -BigInteger id
+    -String ten
+    -String dia_chi
+    -String website
+    -Text ghi_chu
+    +relationship books
+  }
+  
+  class BookImage {
+    -BigInteger id
+    -BigInteger id_sach
+    -Text url_anh
+    -Boolean la_anh_dai_dien
+    -Integer thu_tu
+  }
+  
+  class BookService {
+    +list_books(search, filters, page, limit): BookListResponse
+    +get_book_detail(book_id): BookDetailResponse
+    +create_book(data: BookCreate): Book
+    +update_book(book_id, data: BookUpdate): Book
+    +delete_book(book_id): bool
+  }
+}
+
+package "Copy Management Module" {
+  class Copy {
+    -BigInteger id
+    -BigInteger id_sach
+    -String ma_ban_sao
+    -BigInteger id_vi_tri
+    -Enum trang_thai
+    -DateTime tao_luc
+    -DateTime cap_nhat_luc
+  }
+  
+  class Location {
+    -BigInteger id
+    -String ma_ke
+    -String tang
+    -String phong
+    -String ke
+    -String hang
+    -String cot
+    -Text ghi_chu
+  }
+  
+  class CopyService {
+    +list_copies(filters, page, limit): CopyListResponse
+    +get_copy_by_code(code): CopyLookupOut
+    +create_copy(data: CopyCreate): Copy
+    +update_copy(copy_id, data: CopyPatch): Copy
+  }
+}
+
+package "Loan Management Module" {
+  class Loan {
+    -BigInteger id
+    -BigInteger id_ban_sao
+    -BigInteger id_nguoi_dung
+    -Enum trang_thai
+    -Text ly_do_tu_choi
+    -BigInteger nguoi_duyet
+    -DateTime duyet_luc
+    -DateTime muon_luc
+    -DateTime han_tra
+    -DateTime yeu_cau_tra_luc
+    -BigInteger nguoi_duyet_tra
+    -DateTime tra_luc
+    -Numeric so_tien_phat
+    -Text noi_dung_phat
+    -Boolean da_nop_phat
+    -DateTime ngay_nop_phat
+    -BigInteger admin_xac_nhan_phat
+    -DateTime tao_luc
+  }
+  
+  class Policy {
+    -BigInteger id
+    -Enum loai_nguoi_dung
+    -Integer toi_da_muon
+    -Integer so_ngay_muon
+    -Numeric phat_moi_ngay
+    -Integer so_lan_gia_han
+  }
+  
+  class LoanService {
+    +request_loan(user, copy_id): Loan
+    +request_return(user, loan_id): Loan
+    +list_my_loans(user, status): List[Loan]
+    +admin_approve_loan(admin, loan_id, due_at): Loan
+    +admin_reject_loan(admin, loan_id, reason): Loan
+    +admin_approve_return(admin, loan_id): Loan
+    +calculate_fine(loan): Numeric
+  }
+}
+
+package "Notification Module" {
+  class Notification {
+    -BigInteger id
+    -BigInteger id_nguoi_dung
+    -String loai
+    -Text tieu_de
+    -Text noi_dung
+    -Boolean da_doc
+    -DateTime tao_luc
+  }
+  
+  class NotificationService {
+    +list_notifications(user): List[Notification]
+    +get_unread_count(user): int
+    +mark_read(notification_id, user): Notification
+    +mark_all_read(user): int
+    +create_notification(user_id, type, title, body): Notification
+    +broadcast_notification(user_ids, type, title, body): List[Notification]
+    +send_system_notification(user_type, type, title, body): List[Notification]
+  }
+}
+
+package "System Module" {
+  class Setting {
+    -String khoa
+    -Text gia_tri
+  }
+  
+  class Rule {
+    -BigInteger id
+    -String tieu_de
+    -Text mo_ta
+    -Enum danh_muc
+    -Enum trang_thai
+    -Enum muc_do
+    -Enum doi_tuong
+    -Date ngay_hieu_luc
+    -Date ngay_het_hieu_luc
+    -Numeric so_tien_phat
+    -Enum loai_phat
+    -String don_vi_tien
+    -String nguoi_tao
+    -String nguoi_cap_nhat
+    -DateTime tao_luc
+    -DateTime cap_nhat_luc
+  }
+}
+
+package "Database" {
+  class Base {
+    <<abstract>>
+  }
+  
+  class SessionLocal {
+    +get_db(): Session
+  }
+}
+
+' Relationships
+User "1" --> "*" Loan : mượn
+Copy "1" --> "*" Loan : được mượn
+Book "1" --> "*" Copy : có bản sao
+Book "1" --> "*" BookImage : có ảnh
+Publisher "1" --> "*" Book : xuất bản
+Location "1" --> "*" Copy : chứa
+User "1" --> "*" Notification : nhận
+Book --> Publisher : thuộc về
+Loan --> Policy : áp dụng chính sách
+
+@enduml

@@ -1,0 +1,142 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="use-case-borrow" name="Use-case Borrow Detail">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Actors -->
+        <mxCell id="actor-user" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-admin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="500" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System boundary -->
+        <mxCell id="system-boundary" value="Hệ thống Quản lý Thư viện" style="swimlane;html=1;startSize=20;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="200" width="800" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Use cases -->
+        <mxCell id="uc-view-books" value="Xem danh sách sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-view-detail" value="Xem chi tiết sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-borrow" value="Mượn sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="60" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-check-policy" value="Kiểm tra chính sách mượn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-create-loan" value="Tạo phiếu mượn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="280" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-update-copy" value="Cập nhật trạng thái bản sao" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="480" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-send-notification" value="Gửi thông báo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="system-boundary">
+          <mxGeometry x="680" y="160" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-approve-loan" value="Duyệt mượn sách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="system-boundary">
+          <mxGeometry x="80" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships -->
+        <mxCell id="rel-user-view-books" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-view-books">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-borrow" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-user" target="uc-borrow">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-admin-approve" value="" style="endArrow=plain;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-admin" target="uc-approve-loan">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Include relationships -->
+        <mxCell id="include-view-detail"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=1;exitY=0.5;exitDx=0;exitDy=0;
+                        entryX=0;entryY=0.5;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-view-books" target="uc-view-detail">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-check-policy"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-borrow" target="uc-check-policy">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-create-loan"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-borrow" target="uc-create-loan">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="include-update-copy"
+                value="&lt;&lt;include&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=1;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-borrow" target="uc-update-copy">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Extend relationships -->
+        <mxCell id="extend-notification"
+                value="&lt;&lt;extend&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=0;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=1;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-send-notification" target="uc-borrow">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="extend-notification-approve"
+                value="&lt;&lt;extend&gt;&gt;"
+                style="endArrow=plain;rounded=0;html=0;
+                        exitX=0.5;exitY=0;exitDx=0;exitDy=0;
+                        entryX=0.5;entryY=1;entryDx=0;entryDy=0;
+                        dashed=1;labelPosition=center;
+                        verticalLabelPosition=middle;
+                        align=center;verticalAlign=middle;
+                        fontStyle=1;fontSize=10;"
+                edge="1" parent="system-boundary"
+                source="uc-send-notification" target="uc-approve-loan">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,80 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+
+autonumber
+
+actor Admin
+participant "Frontend Admin" as Frontend
+participant "Loans Router\n(/api/admin/loans)" as LoanRouter
+participant "LoanService" as LoanService
+participant "Policy" as Policy
+participant "Database" as DB
+participant "NotificationService" as NotifService
+
+Admin -> Frontend: Xem danh sách yêu cầu mượn
+Frontend -> LoanRouter: GET /api/admin/loans?status=requested
+LoanRouter -> DB: SELECT loans WHERE status='requested'\nJOIN users, copies, books
+DB --> LoanRouter: Loans list
+LoanRouter --> Frontend: List of requested loans
+Frontend --> Admin: Hiển thị danh sách
+
+Admin -> Frontend: Chọn một yêu cầu và click "Duyệt"
+Frontend -> Frontend: Hiển thị dialog nhập hạn trả
+Admin -> Frontend: Nhập ngày hạn trả (hoặc dùng mặc định)
+Frontend -> LoanRouter: POST /api/admin/loans/{loan_id}/approve\n{due_at}
+
+LoanRouter -> DB: SELECT loan WHERE id = loan_id
+DB --> LoanRouter: Loan data
+
+alt Loan không tồn tại hoặc không ở trạng thái 'requested'
+    LoanRouter --> Frontend: 400 Error\n{BAD_STATE}
+    Frontend --> Admin: Thông báo lỗi
+else
+    LoanRouter -> DB: SELECT copy WHERE id = loan.id_ban_sao
+    DB --> LoanRouter: Copy data
+    
+    LoanRouter -> DB: SELECT user WHERE id = loan.id_nguoi_dung
+    DB --> LoanRouter: User data (loai_nguoi_dung)
+    
+    LoanRouter -> Policy: Lấy số ngày mượn tối đa
+    Policy -> DB: SELECT policy WHERE loai_nguoi_dung
+    DB --> Policy: Policy data (so_ngay_muon)
+    Policy --> LoanRouter: max_days
+    
+    LoanRouter -> LoanService: Kiểm tra hạn trả không vượt quá max_days
+    LoanService -> LoanService: Tính (due_date - borrow_date).days
+    
+    alt (due_date - borrow_date).days > max_days
+        LoanService --> LoanRouter: Error: Hạn trả vượt quá
+        LoanRouter --> Frontend: 400 Error
+        Frontend --> Admin: Thông báo hạn trả vượt quá
+    else
+        LoanService -> DB: UPDATE phieu_muon SET\nstatus='borrowed',\nnguoi_duyet=admin_id,\nduyet_luc=NOW(),\nmuon_luc=NOW(),\nhan_tra=due_at
+        DB --> LoanService: Loan updated
+        LoanService -> DB: UPDATE ban_sao SET trang_thai='on_loan'
+        DB --> LoanService: Copy updated
+        LoanService -> DB: COMMIT
+        LoanService --> LoanRouter: Success
+        
+        LoanRouter -> NotifService: Gửi thông báo cho người mượn
+        NotifService -> DB: INSERT INTO thong_bao\n(loan_approved, title, body)
+        DB --> NotifService: Notification created
+        NotifService --> LoanRouter: Done
+        
+        LoanRouter --> Frontend: {id, status: 'borrowed'}
+        Frontend --> Admin: Hiển thị thông báo thành công
+    end
+end
+
+@enduml

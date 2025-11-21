@@ -1,0 +1,77 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+
+autonumber
+
+actor User
+participant "Frontend" as Frontend
+participant "Loans Router\n(/api/loans)" as LoanRouter
+participant "LoanService" as LoanService
+participant "Policy" as Policy
+participant "Database" as DB
+participant "NotificationService" as NotifService
+
+User -> Frontend: Chọn bản sao và click "Mượn sách"
+Frontend -> LoanRouter: POST /api/loans/request\n{copy_id}\n(Header: Bearer token)
+LoanRouter -> DB: SELECT copy WHERE id = copy_id
+DB --> LoanRouter: Copy data
+
+alt Copy không tồn tại hoặc không available
+    LoanRouter --> Frontend: 400 Error\n{COPY_NOT_AVAILABLE}
+    Frontend --> User: Hiển thị thông báo lỗi
+else Copy available
+    LoanRouter -> LoanService: Kiểm tra số lượng sách đang mượn
+    LoanService -> DB: SELECT COUNT(loans) WHERE user_id\nAND status IN (requested, borrowed, return_requested)
+    DB --> LoanService: current_loans count
+    LoanService -> Policy: Lấy chính sách mượn
+    Policy -> DB: SELECT policy WHERE loai_nguoi_dung
+    DB --> Policy: Policy data (toi_da_muon)
+    Policy --> LoanService: max_loans
+    
+    alt current_loans >= max_loans
+        LoanService --> LoanRouter: Error: Đã mượn tối đa
+        LoanRouter --> Frontend: 400 Error
+        Frontend --> User: Thông báo đã mượn tối đa
+    else
+        LoanService -> DB: Kiểm tra đã mượn bản sao khác của cùng sách
+        DB --> LoanService: has_same_book (true/false)
+        
+        alt has_same_book = true
+            LoanService --> LoanRouter: Error: Đã mượn sách này
+            LoanRouter --> Frontend: 400 Error
+            Frontend --> User: Thông báo đã mượn sách này
+        else
+            LoanService -> DB: INSERT INTO phieu_muon\n(status='requested')
+            DB --> LoanService: Loan created
+            LoanService -> DB: UPDATE ban_sao SET trang_thai='reserved'
+            DB --> LoanService: Copy updated
+            LoanService -> DB: COMMIT
+            LoanService --> LoanRouter: {id, status}
+            
+            LoanRouter -> NotifService: Gửi thông báo cho admin
+            NotifService -> DB: SELECT users WHERE vai_tro='admin'
+            DB --> NotifService: Admin list
+            loop Cho mỗi admin
+                NotifService -> DB: INSERT INTO thong_bao\n(loan_request, title, body)
+            end
+            DB --> NotifService: Notifications created
+            NotifService --> LoanRouter: Done
+            
+            LoanRouter --> Frontend: {id, status: 'requested'}
+            Frontend --> User: Hiển thị thông báo thành công
+        end
+    end
+end
+
+@enduml

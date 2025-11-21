@@ -1,0 +1,67 @@
+@startuml
+!theme plain
+
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+
+skinparam sequence {
+  ParticipantFontName "Times New Roman"
+  ParticipantFontSize 14
+  MessageFontName "Times New Roman"
+  TitleFontName "Times New Roman"
+}
+
+
+autonumber
+
+actor Admin
+participant "Frontend Admin" as Frontend
+participant "Books Router\n(/api/books)" as BookRouter
+participant "BookService" as BookService
+participant "Publishers Router" as PubRouter
+participant "Database" as DB
+
+Admin -> Frontend: Vào trang quản lý sách
+Frontend -> BookRouter: GET /api/books?page=1&limit=20
+BookRouter -> DB: SELECT books JOIN publishers
+DB --> BookRouter: Books list
+BookRouter --> Frontend: {items, page, limit, total}
+Frontend --> Admin: Hiển thị danh sách sách
+
+Admin -> Frontend: Click "Thêm sách mới"
+Frontend -> Frontend: Hiển thị form thêm sách
+
+Admin -> Frontend: Điền thông tin sách\n(tiêu đề, tác giả, NXB, năm XB, thể loại, mô tả, giá bìa)
+Admin -> Frontend: Upload ảnh sách (nhiều ảnh, chọn ảnh đại diện)
+Frontend -> Frontend: Validate dữ liệu
+
+alt NXB chưa tồn tại
+    Frontend -> PubRouter: POST /api/publishers\n{name, address, website, note}
+    PubRouter -> DB: INSERT INTO nha_xuat_ban
+    DB --> PubRouter: Publisher created
+    PubRouter --> Frontend: {id, name}
+    Frontend -> Frontend: Lưu publisher_id
+end
+
+Frontend -> BookRouter: POST /api/books\n{title, authors, publisher_id, pub_year, the_loai, mo_ta, gia_bia, currency}
+BookRouter -> BookService: Validate và tạo sách
+BookService -> DB: INSERT INTO sach\n(tieu_de, tac_gia, id_nxb, nam_xb, the_loai, mo_ta, gia_bia)
+DB --> BookService: Book created (id)
+BookService -> DB: COMMIT
+
+loop Cho mỗi ảnh
+    BookService -> DB: INSERT INTO anh_sach\n(id_sach, url_anh, la_anh_dai_dien, thu_tu)
+end
+DB --> BookService: Images created
+BookService -> DB: COMMIT
+
+BookService --> BookRouter: {id}
+BookRouter --> Frontend: {id}
+Frontend --> Admin: Hiển thị thông báo thành công
+Frontend -> BookRouter: GET /api/books (refresh list)
+BookRouter -> DB: SELECT books
+DB --> BookRouter: Updated list
+BookRouter --> Frontend: Books list
+Frontend --> Admin: Hiển thị danh sách đã cập nhật
+
+@enduml
