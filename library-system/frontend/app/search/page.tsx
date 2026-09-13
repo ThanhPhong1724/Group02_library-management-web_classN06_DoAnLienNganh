@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   Search, 
   User, 
@@ -111,20 +111,16 @@ const fetchBooksByCategory = async (category: string, page: number = 1): Promise
 };
 
 const fetchCategories = async (): Promise<Category[]> => {
-  // Note: API spec doesn't show a categories endpoint
-  // For now, we'll return mock categories
-  return [
-    { id: "ky-nang-song", name: "Kỹ năng sống", book_count: 45 },
-    { id: "van-hoc", name: "Văn học", book_count: 120 },
-    { id: "kinh-te", name: "Kinh tế", book_count: 78 },
-    { id: "lich-su", name: "Lịch sử", book_count: 56 },
-    { id: "khoa-hoc", name: "Khoa học", book_count: 89 },
-    { id: "cong-nghe", name: "Công nghệ", book_count: 67 },
-    { id: "giao-duc", name: "Giáo dục", book_count: 34 },
-    { id: "y-te", name: "Y tế", book_count: 23 },
-    { id: "the-thao", name: "Thể thao", book_count: 12 },
-    { id: "am-nhac", name: "Âm nhạc", book_count: 18 }
-  ];
+  try {
+    const response = await fetch('/api/books/categories');
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) return data;
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+  }
+  return [];
 };
 
 // Book card component
@@ -432,58 +428,16 @@ function SearchPageContent() {
                   </div>
 
                   {/* Pagination */}
-                  {searchResults.total_pages > 1 && (
-                    <div className="flex justify-center">
-                      <Pagination>
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious 
-                              onClick={() => handlePageChange(currentPage - 1)}
-                              className={currentPage <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                            />
-                          </PaginationItem>
-                          
-                          {Array.from({ length: Math.min(5, searchResults.total_pages) }, (_, i) => {
-                            const page = i + 1;
-                            return (
-                              <PaginationItem key={page}>
-                                <PaginationLink
-                                  onClick={() => handlePageChange(page)}
-                                  isActive={page === currentPage}
-                                  className="cursor-pointer"
-                                >
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            );
-                          })}
-                          
-                          {searchResults.total_pages > 5 && (
-                            <>
-                              <PaginationItem>
-                                <PaginationEllipsis />
-                              </PaginationItem>
-                              <PaginationItem>
-                                <PaginationLink
-                                  onClick={() => handlePageChange(searchResults.total_pages)}
-                                  className="cursor-pointer"
-                                >
-                                  {searchResults.total_pages}
-                                </PaginationLink>
-                              </PaginationItem>
-                            </>
-                          )}
-                          
-                          <PaginationItem>
-                            <PaginationNext 
-                              onClick={() => handlePageChange(currentPage + 1)}
-                              className={currentPage >= searchResults.total_pages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </div>
-                  )}
+                  <div className="mt-8 pt-4 border-t">
+                    <AppPagination
+                      currentPage={currentPage}
+                      totalPages={searchResults.total_pages}
+                      totalItems={searchResults.total}
+                      itemsPerPage={20}
+                      itemName="sách tìm thấy"
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
                 </>
               ) : (
                 <Card>

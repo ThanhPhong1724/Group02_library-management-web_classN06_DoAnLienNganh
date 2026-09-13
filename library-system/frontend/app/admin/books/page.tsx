@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   BookOpen, 
   Search, 
@@ -514,11 +514,7 @@ export default function AdminBooksPage() {
           page: currentPage,
           limit: 12
         });
-        if (currentPage === 1) {
-          setBooks(result.items);
-        } else {
-          setBooks(prev => [...prev, ...result.items]);
-        }
+        setBooks(result.items);
         setTotalPages(result.total_pages);
         setTotalBooks(result.total);
       } catch (error) {
@@ -537,15 +533,6 @@ export default function AdminBooksPage() {
     e.preventDefault();
     setCurrentPage(1);
   };
-
-  // Thay đổi: bỏ phân trang số, thêm nút Xem thêm
-  {!isLoading && books.length < totalBooks && (
-    <div className="flex justify-center mt-6">
-      <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-        Xem thêm
-      </Button>
-    </div>
-  )}
 
   const handleFilterChange = (key: keyof BookFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -797,13 +784,17 @@ export default function AdminBooksPage() {
           )}
 
           {/* Pagination */}
-          {/* Không còn hiển thị số trang, <, >, ... nữa. */}
-          {/* Nếu đã hết dữ liệu thì ẩn nút 'Xem thêm'. */}
-          {!isLoading && books.length < totalBooks && (
-            <div className="flex justify-center mt-6">
-              <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-                Xem thêm
-              </Button>
+          {/* Phân trang */}
+          {!isLoading && books.length > 0 && (
+            <div className="mt-6 pt-4 border-t">
+              <AppPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalBooks}
+                itemsPerPage={itemsPerPage}
+                itemName="sách"
+                onPageChange={(p) => setCurrentPage(p)}
+              />
             </div>
           )}
         </div>

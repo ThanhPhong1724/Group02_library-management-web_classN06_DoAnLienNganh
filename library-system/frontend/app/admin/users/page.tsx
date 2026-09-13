@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   Users, 
   Search, 
@@ -488,11 +488,7 @@ export default function AdminUsersPage() {
           page: currentPage,
           limit: 12
         });
-        if (currentPage === 1) {
-          setUsers(result.items);
-        } else {
-          setUsers(prev => [...prev, ...result.items]);
-        }
+        setUsers(result.items);
         setTotalPages(result.total_pages);
         setTotalUsers(result.total);
       } catch (error) {
@@ -511,15 +507,6 @@ export default function AdminUsersPage() {
     e.preventDefault();
     setCurrentPage(1);
   };
-
-  // Thay đổi: bỏ phân trang số, thêm nút Xem thêm
-  {!isLoading && users.length < totalUsers && (
-    <div className="flex justify-center mt-6">
-      <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-        Xem thêm
-      </Button>
-    </div>
-  )}
 
   const handleFilterChange = (key: keyof UserFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -740,13 +727,17 @@ export default function AdminUsersPage() {
             </div>
           )}
 
-          {/* Pagination */}
-          {/* Sửa: bỏ phân trang số, thêm nút Xem thêm */}
-          {!isLoading && users.length < totalUsers && (
-            <div className="flex justify-center mt-6">
-              <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-                Xem thêm
-              </Button>
+          {/* Phân trang */}
+          {!isLoading && users.length > 0 && (
+            <div className="mt-6 pt-4 border-t">
+              <AppPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalUsers}
+                itemsPerPage={12}
+                itemName="thành viên"
+                onPageChange={(p) => setCurrentPage(p)}
+              />
             </div>
           )}
         </div>

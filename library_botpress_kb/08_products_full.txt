@@ -1,0 +1,51 @@
+slug,tieu_de,tac_gia,gia_bia,anh,ke,so_ban_con
+1-ngay-bang-48-gio,1 Ngày Bằng 48 Giờ - Sổ Tay Quản Lí Thời Gian Hiệu Quả,Viện Nghiên Cứu Thực Tế Nhanh,89000,https://product.hstatic.net/1000237375/product/1080x1080_mot_ngay_bang_48_gio_3c53f3157d66419fb39d33fd743dace6.jpg,A-01-02-05;A-01-03-02,2
+10-van-vi-sao-t1,10 Vạn Câu Hỏi Vì Sao - Tập 1 (Tái Bản),Đặng Minh Dũng,120000,https://product.hstatic.net/1000237375/product/vancauhoi_visao_t1.jpg,A-01-02-05;B-02-01-01,2
+10-van-vi-sao-t2,10 Vạn Câu Hỏi Vì Sao - Tập 2 (Tái Bản),Đặng Minh Dũng,120000,https://product.hstatic.net/1000237375/product/cover_f180684ac91c429ba3d0331343a5ac27.jpg,B-02-03-12,1
+100-chuyen-be-gai,100 Câu Chuyện Hay Dành Cho Bé Gái (Tái Bản),Nhiều tác giả,99000,https://product.hstatic.net/1000237375/product/1_c3108369c9e14951aea57682eeb35ab5.png,A-01-02-05;A-01-04-03,2
+100-chuyen-be-trai,100 Câu Chuyện Hay Dành Cho Bé Trai (Tái Bản),Nhiều tác giả,99000,https://product.hstatic.net/1000237375/product/1_80d7f728fe5d463392066af843035f93.png,A-01-01-01,1
+100-co-tich-tg,100 Truyện Cổ Tích Thế Giới (TB),Ngọc Ánh,150000,https://product.hstatic.net/1000237375/product/bia_100_truyen_co_tich_the_gioi.jpg,B-02-03-12,1
+100-co-tich-vn,100 Truyện Cổ Tích Việt Nam (Tái Bản),Nhiều tác giả,145000,https://product.hstatic.net/1000237375/product/100-truyen-co-tich-viet-nam-440.jpg,A-01-01-01;B-02-02-02,2
+100-truyen-duc-tinh,100 Truyện Hay Rèn Đức Tính Tốt (Tái Bản),Nhiều tác giả,110000,https://product.hstatic.net/1000237375/product/100-truyen-duc-tinh-900x900_179fb8c820594acca4ddcc73c83a5d2d_master_3ba7484c036543e1b52b5c1a3e345cef.png,B-02-03-12,1
+100-ngu-ngon-song-ngu,100 Truyện Ngụ Ngôn Song Ngữ Anh-Việt Hay Nhất,Nguyễn Châu Nguyên,135000,https://product.hstatic.net/1000237375/product/thi_t_k__ch_a_c__t_n_ef554182dc0a4040b417c56e0d953a5e.png,A-01-02-05,1
+1000-tu-tieng-anh,1000 Từ Tiếng Anh Đầu Tiên,Minh Long,99000,https://product.hstatic.net/1000237375/product/1_198be45d6ce94c5b84f5ce5c974f5edb.png,A-01-02-05,1
+101-cong-chua,101 Câu Chuyện Về Các Nàng Công Chúa (Tái Bản),Nhiều tác giả,119000,https://product.hstatic.net/1000237375/product/bt_fdd03a27053d412cbc204e24eaa8b830.jpg,B-02-03-12,1
+101-bang-chu-cai,101 Từ Đầu Tiên Cho Bé - Bảng Chữ Cái (Tái bản),Nhiều tác giả,69000,https://product.hstatic.net/1000237375/product/1_08814a638afe42eb943847a13faed51e.png,A-01-01-01,1
+101-do-dung-than-thiet,101 Từ Đầu Tiên Cho Bé - Đồ Dùng Thân Thiết (Tái Bản),Nhiều tác giả,69000,https://product.hstatic.net/1000237375/product/thiet_ke_khong_ten__1__971e1dc3d3314b3fb498de345f78726a.png,A-01-02-05,1
+101-co-tich-chon-loc,101 Truyện Cổ Tích Chọn Lọc (Tái bản),Vương Diễm Nga,135000,https://product.hstatic.net/1000237375/product/1_4fc9f81953e34f74bf310692611328e5.png,A-01-01-01;C-03-01-01,2
+101-tri-thong-minh,101 Truyện Hay Về Trí Thông Minh (Tái bản),Vương Diễm Nga,129000,https://product.hstatic.net/1000237375/product/1_0368e9ae51f241d595e7728ac91d517b.png,B-02-03-12,1
+101-be-gai-truong-thanh,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,129000,https://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a.png,A-01-02-05,1
+101-me-ke-con-nghe,101 Truyện Mẹ Kể Con Nghe (Tái bản),Ngọc Ánh,115000,https://product.hstatic.net/1000237375/product/bt_152ee859b0474596bdd681c772a309fc.jpg,A-01-02-05,1
+101-pha-an-kinh-dien,101 Truyện Phá Án Kinh Điển (Tái bản),Vương Diễm Nga,139000,https://product.hstatic.net/1000237375/product/thiet_ke_chua_co_ten__4__7ebbbb59d5a0484989646403a3eea877.png,B-02-03-12,1
+1-ngay-bang-48-gio-19,1 Ngày Bằng 48 Giờ - Sổ Tay Quản Lí Thời Gian Hiệu Quả,Viện Nghiên Cứu Thực Tế Nhanh,57600,http://product.hstatic.net/1000237375/product/1080x1080_mot_ngay_bang_48_gio_3c53f3157d66419fb39d33fd743dace6_grande.jpg,A-01-01-01,1
+10-van-vi-sao-t2-20,10 Vạn Câu Hỏi Vì Sao - Tập 2 (Tái Bản),Đặng Minh Dũng,44000,http://product.hstatic.net/1000237375/product/cover_f180684ac91c429ba3d0331343a5ac27_grande.jpg,A-01-02-05,1
+10-van-vi-sao-t1-21,10 Vạn Câu Hỏi Vì Sao - Tập 1 (Tái Bản),Đặng Minh Dũng,44000,http://product.hstatic.net/1000237375/product/vancauhoi_visao_t1_grande.jpg,B-02-03-12,1
+100-chuyen-be-gai-22,100 Câu Chuyện Hay Dành Cho Bé Gái (Tái Bản),Nhiều tác giả,72000,http://product.hstatic.net/1000237375/product/1_c3108369c9e14951aea57682eeb35ab5_grande.png,A-01-01-01,1
+100-chuyen-be-trai-23,100 Câu Chuyện Hay Dành Cho Bé Trai (Tái Bản),Nhiều tác giả,72000,http://product.hstatic.net/1000237375/product/1_80d7f728fe5d463392066af843035f93_grande.png,A-01-02-05,1
+100-co-tich-vn-24,100 Truyện Cổ Tích Việt Nam (Tái Bản),Nhiều tác giả,84000,http://product.hstatic.net/1000237375/product/100-truyen-co-tich-viet-nam-440_grande.jpg,B-02-03-12,1
+100-co-tich-tg-25,100 Truyện Cổ Tích Thế Giới (TB),Ngọc Ánh,92000,http://product.hstatic.net/1000237375/product/bia_100_truyen_co_tich_the_gioi_grande.jpg,A-01-02-05,1
+100-truyen-duc-tinh-26,100 Truyện Hay Rèn Đức Tính Tốt (Tái Bản),Nhiều tác giả,72000,http://product.hstatic.net/1000237375/product/100-truyen-duc-tinh-900x900_179fb8c820594acca4ddcc73c83a5d2d_master_3ba7484c036543e1b52b5c1a3e345cef_grande.png,B-02-03-12,1
+101-cong-chua-27,101 Câu Chuyện Về Các Nàng Công Chúa (Tái Bản),Nhiều tác giả,108000,http://product.hstatic.net/1000237375/product/bt_fdd03a27053d412cbc204e24eaa8b830_grande.jpg,A-01-01-01,1
+1000-tu-tieng-anh-28,1000 Từ Tiếng Anh Đầu Tiên,Minh Long,96000,http://product.hstatic.net/1000237375/product/1_198be45d6ce94c5b84f5ce5c974f5edb_grande.png,B-02-03-12,1
+100-ngu-ngon-song-ngu-29,100 Truyện Ngụ Ngôn Song Ngữ Anh - Việt Hay Nhất,Nguyễn Châu Nguyên,100000,http://product.hstatic.net/1000237375/product/thi_t_k__ch_a_c__t_n_ef554182dc0a4040b417c56e0d953a5e_grande.png,A-01-02-05,1
+101-bang-chu-cai-30,101 Từ Đầu Tiên Cho Bé - Bảng Chữ Cái (Tái bản),Nhiều tác giả,48000,http://product.hstatic.net/1000237375/product/1_08814a638afe42eb943847a13faed51e_grande.png,B-02-03-12,1
+101-be-gai-truong-thanh-31,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1
+101-do-dung-than-thiet-32,101 Từ Đầu Tiên Cho Bé - Đồ Dùng Thân Thiết (Tái Bản),Nhiều tác giả,48000,http://product.hstatic.net/1000237375/product/thiet_ke_khong_ten__1__971e1dc3d3314b3fb498de345f78726a_grande.png,A-01-02-05,1
+101-pha-an-kinh-dien-33,101 Truyện Phá Án Kinh Điển (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/thiet_ke_chua_co_ten__4__7ebbbb59d5a0484989646403a3eea877_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-34,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1
+101-be-gai-truong-thanh-35,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-02-05,1
+101-be-trai-truong-thanh-36,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-gai-truong-thanh-37,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1
+101-be-trai-truong-thanh-38,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-02-05,1
+101-be-gai-truong-thanh-39,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-40,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1
+101-be-gai-truong-thanh-41,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-42,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-02-05,1
+101-be-gai-truong-thanh-43,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-44,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-02-05,1
+101-be-gai-truong-thanh-45,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-46,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1
+101-be-gai-truong-thanh-47,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-trai-truong-thanh-48,101 Truyện Hay Theo Bước Bé Trai Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-02-05,1
+101-be-gai-truong-thanh-49,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,B-02-03-12,1
+101-be-gai-truong-thanh-50,101 Truyện Hay Theo Bước Bé Gái Trưởng Thành (Tái bản),Vương Diễm Nga,72000,http://product.hstatic.net/1000237375/product/1_b74864f5f33d48718acc8d2b99003e8a_grande.png,A-01-01-01,1

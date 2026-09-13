@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   BookOpen, 
   Search, 
@@ -124,23 +124,27 @@ const fetchLoans = async (params: {
     }
 
     const data = await response.json();
-    const items = Array.isArray(data) ? data : (data.items || []);
+    const rawItems = Array.isArray(data) ? data : (data.items || []);
+    const mapped = rawItems.map((item: any) => ({
+      ...item,
+      loan_date: item.borrowed_at,
+      due_date: item.due_at,
+      return_date: item.returned_at,
+      copy_code: item.copy_code, // map mã sách
+      fine_amount: item.fine_amount,
+      fine_note: item.fine_note,
+      fine_paid: item.fine_paid,
+      fine_paid_at: item.fine_paid_at,
+      fine_confirmed_by: item.fine_confirmed_by,
+    }));
+    const total = mapped.length;
+    const startIndex = (params.page - 1) * params.limit;
+    const items = mapped.slice(startIndex, startIndex + params.limit);
     return {
-      items: items.map((item: any) => ({
-        ...item,
-        loan_date: item.borrowed_at,
-        due_date: item.due_at,
-        return_date: item.returned_at,
-        copy_code: item.copy_code, // map mã sách
-        fine_amount: item.fine_amount,
-        fine_note: item.fine_note,
-        fine_paid: item.fine_paid,
-        fine_paid_at: item.fine_paid_at,
-        fine_confirmed_by: item.fine_confirmed_by,
-      })),
-      total: items.length,
+      items,
+      total,
       page: params.page,
-      total_pages: 1
+      total_pages: Math.max(1, Math.ceil(total / params.limit))
     };
   } catch (error) {
     console.error('Error fetching loans:', error);
@@ -607,11 +611,7 @@ export default function AdminLoansPage() {
         page: currentPage,
         limit: 12
       });
-      if (currentPage === 1) {
-        setLoans(result.items);
-      } else {
-        setLoans(prev => [...prev, ...result.items]);
-      }
+      setLoans(result.items);
       setTotalPages(result.total_pages);
       setTotalLoans(result.total);
     } catch (error) {
@@ -635,15 +635,6 @@ export default function AdminLoansPage() {
     e.preventDefault();
     setCurrentPage(1);
   };
-
-  // Thay đổi: bỏ phân trang số, thêm nút Xem thêm
-  {!isLoading && loans.length < totalLoans && (
-    <div className="flex justify-center mt-6">
-      <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-        Xem thêm
-      </Button>
-    </div>
-  )}
 
   const handleFilterChange = (key: keyof LoanFilters, value: string) => {
     setFilters((prev: LoanFilters) => ({ ...prev, [key]: value }));
@@ -1037,13 +1028,17 @@ export default function AdminLoansPage() {
             </div>
           )}
 
-          {/* Pagination */}
-          {/* Thay đổi: bỏ phân trang số, thêm nút Xem thêm */}
-          {!isLoading && loans.length < totalLoans && (
-            <div className="flex justify-center mt-6">
-              <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-                Xem thêm
-              </Button>
+          {/* Phân trang */}
+          {!isLoading && loans.length > 0 && (
+            <div className="mt-6 pt-4 border-t">
+              <AppPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalLoans}
+                itemsPerPage={itemsPerPage}
+                itemName="phiếu mượn"
+                onPageChange={(p) => setCurrentPage(p)}
+              />
             </div>
           )}
         </div>

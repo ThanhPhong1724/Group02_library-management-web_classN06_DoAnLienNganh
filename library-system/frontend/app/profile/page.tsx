@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   User, 
   Mail, 
@@ -183,6 +184,11 @@ export default function ProfilePage() {
   const [qrPreview, setQrPreview] = useState<string | null>(null);
   const [qrChecked, setQrChecked] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [loanPage, setLoanPage] = useState(1);
+  const loanPageSize = 5;
+  const totalLoanPages = Math.max(1, Math.ceil(loans.length / loanPageSize));
+  const pagedLoans = loans.slice((loanPage - 1) * loanPageSize, loanPage * loanPageSize);
 
   // Load profile data
   const refreshLoans = useCallback(async () => {
@@ -511,7 +517,8 @@ export default function ProfilePage() {
                       <p className="text-muted-foreground">Chưa có lịch sử mượn sách</p>
                     </div>
                   ) : (
-                    <Table>
+                    <>
+                      <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Tên sách</TableHead>
@@ -525,7 +532,7 @@ export default function ProfilePage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {loans.map((loan) => (
+                        {pagedLoans.map((loan) => (
                           <motion.tr
                             key={loan.id}
                             initial={{ opacity: 0, y: 10 }}
@@ -593,6 +600,20 @@ export default function ProfilePage() {
                         ))}
                       </TableBody>
                     </Table>
+                    {loans.length > loanPageSize && (
+                      <div className="mt-4 pt-4 border-t">
+                        <AppPagination
+                          currentPage={loanPage}
+                          totalPages={totalLoanPages}
+                          totalItems={loans.length}
+                          itemsPerPage={loanPageSize}
+                          itemName="phiếu mượn"
+                          onPageChange={(p) => setLoanPage(p)}
+                          scrollToTop={false}
+                        />
+                      </div>
+                    )}
+                  </>
                   )}
                 </CardContent>
               </Card>

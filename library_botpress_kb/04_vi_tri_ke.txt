@@ -1,0 +1,10 @@
+ma_ke,tang,phong,ke,hang,cot,ghi_chu
+A-01-01-01,1,Phòng Đọc,A,01,01,Kệ tổng hợp
+A-01-02-05,1,Phòng Đọc,A,02,05,Kệ văn học
+B-02-03-12,2,Phòng Tự Học,B,03,12,Kệ khoa học
+A-01-03-02,1,Phòng Đọc,A,03,02,Kệ văn học Việt Nam
+A-01-04-03,1,Phòng Đọc,A,04,03,Kệ sách kỹ năng
+B-02-01-01,2,Phòng Tự Học,B,01,01,Kệ sách khoa học tự nhiên
+B-02-02-02,2,Phòng Tự Học,B,02,02,Kệ sách lịch sử
+C-03-01-01,3,Phòng Tham Khảo,C,01,01,Kệ sách tham khảo
+C-03-02-02,3,Phòng Tham Khảo,C,02,02,Kệ từ điển

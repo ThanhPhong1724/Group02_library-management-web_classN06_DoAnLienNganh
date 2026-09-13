@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -42,11 +44,16 @@ def list_books(
             func.lower(Book.tac_gia).like(func.lower(like))
         )
     if subjects and subjects != "all":
-        base = base.where(Book.the_loai == subjects)
+        like_subj = f"%{subjects}%"
+        base = base.where(func.lower(Book.the_loai).like(func.lower(like_subj)))
     if language and language != "all":
-        base = base.where(Book.ngon_ngu == language)
+        if language in ["vi", "Tiếng Việt"]:
+            base = base.where(Book.ngon_ngu.in_(["vi", "Tiếng Việt"]))
+        else:
+            base = base.where(func.lower(Book.ngon_ngu) == func.lower(language))
     if publisher and publisher != "all":
-        base = base.where(Publisher.ten == publisher)
+        like_pub = f"%{publisher}%"
+        base = base.where(func.lower(Publisher.ten).like(func.lower(like_pub)))
     if pub_year:
         base = base.where(Book.nam_xb == pub_year)
 
@@ -57,7 +64,7 @@ def list_books(
     items: list[BookListItem] = []
     for r, pub in rows:
         primary_image = db.execute(
-            select(BookImage.url_anh).where(BookImage.id_sach == r.id, BookImage.la_anh_dai_dien == True).limit(1)
+            select(BookImage.url_anh).where(BookImage.id_sach == r.id, BookImage.la_anh_dai_dien.is_(True)).limit(1)
         ).scalar_one_or_none()
         items.append(
             BookListItem(
@@ -78,19 +85,33 @@ def list_books(
     return BookListResponse(items=items, page=page, limit=limit, total=total)
 
 
+@router.get("/categories")
+def get_categories(db: Session = Depends(get_db)):
+    rows = db.execute(
+        select(Book.the_loai, func.count(Book.id))
+        .where(Book.the_loai.isnot(None))
+        .group_by(Book.the_loai)
+        .order_by(func.count(Book.id).desc())
+    ).all()
+    return [
+        {"id": r[0], "name": r[0], "book_count": r[1]}
+        for r in rows if r[0]
+    ]
+
+
 @router.get("/subjects", response_model=List[str])
 def get_subjects(db: Session = Depends(get_db)):
-    rows = db.execute(select(func.distinct(Book.the_loai)).where(Book.the_loai != None)).scalars().all()
+    rows = db.execute(select(func.distinct(Book.the_loai)).where(Book.the_loai.isnot(None))).scalars().all()
     return [r for r in rows if r]
 
 @router.get("/languages", response_model=List[str])
 def get_languages(db: Session = Depends(get_db)):
-    rows = db.execute(select(func.distinct(Book.ngon_ngu)).where(Book.ngon_ngu != None)).scalars().all()
+    rows = db.execute(select(func.distinct(Book.ngon_ngu)).where(Book.ngon_ngu.isnot(None))).scalars().all()
     return [r for r in rows if r]
 
 @router.get("/publishers", response_model=List[str])
 def get_publishers(db: Session = Depends(get_db)):
-    rows = db.execute(select(func.distinct(Publisher.ten)).where(Publisher.ten != None)).scalars().all()
+    rows = db.execute(select(func.distinct(Publisher.ten)).where(Publisher.ten.isnot(None))).scalars().all()
     return [r for r in rows if r]
 
 @router.get("/{book_id}")

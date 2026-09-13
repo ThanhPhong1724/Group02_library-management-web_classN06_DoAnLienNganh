@@ -1,0 +1,44 @@
+FAQ – Hỏi đáp nhanh
+
+Tôi là sinh viên, được mượn bao nhiêu cuốn và trong bao lâu?
+- Tối đa 3 cuốn, thời hạn 14 ngày.
+
+Tôi là nhân viên, được mượn bao nhiêu cuốn?
+- Tối đa 5 cuốn, thời hạn 30 ngày, không phạt trễ.
+
+Tôi là khách, được mượn bao nhiêu cuốn?
+- Tối đa 1 cuốn, thời hạn 7 ngày, phạt 5.000đ/ngày/cuốn nếu trễ.
+
+Tôi có thể gia hạn không?
+- Có. Tối đa 2 lần, mỗi lần +7 ngày nếu sách không có người đặt trước.
+
+Phạt trễ như thế nào?
+- Sinh viên: 2.000đ/ngày/cuốn
+- Khách: 5.000đ/ngày/cuốn  
+- Sau 15 ngày: tạm khóa tài khoản
+
+Làm mất/hỏng sách thì sao?
+- Bồi thường đúng đầu sách hoặc giá bìa + 10% phí xử lý.
+
+Sách "1 Ngày Bằng 48 Giờ" còn không?
+- Hiện còn 2 bản. Vị trí: A-01-02-05 và A-01-03-02.
+
+Sách "10 Vạn Câu Hỏi Vì Sao" có không?
+- Có cả Tập 1 và Tập 2. Tập 1 còn 2 bản, Tập 2 còn 1 bản.
+
+Tôi muốn biết sách nằm ở kệ nào?
+- Bot sẽ trả mã kệ (VD: A-01-02-05) và mô tả vị trí chi tiết.
+
+Thư viện có những loại sách gì?
+- Thiếu nhi: Cổ tích, truyện kể, từ vựng, kỹ năng sống
+- Kỹ năng: Quản lý thời gian, giao tiếp
+- Ngoại ngữ: Tiếng Anh song ngữ
+
+Tôi có thể đặt trước sách không?
+- Có. Sách sẽ được giữ 48 giờ kể từ khi có thông báo.
+
+Thư viện có Wi-Fi không?
+- Có Wi-Fi miễn phí tại phòng đọc.
+
+Tôi có thể in/scan tài liệu không?
+- Có dịch vụ in/scan tại quầy thủ thư (tính phí).

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   Search, 
   Filter,
@@ -106,28 +106,30 @@ const fetchBooks = async (params: {
   };
 };
 
-// Mock categories (since API doesn't have categories endpoint)
-const categories = [
-  { id: "ky-nang-song", name: "Kỹ năng sống", book_count: 45 },
-  { id: "van-hoc", name: "Văn học", book_count: 120 },
-  { id: "kinh-te", name: "Kinh tế", book_count: 78 },
-  { id: "lich-su", name: "Lịch sử", book_count: 56 },
-  { id: "khoa-hoc", name: "Khoa học", book_count: 89 },
-  { id: "cong-nghe", name: "Công nghệ", book_count: 67 },
-  { id: "giao-duc", name: "Giáo dục", book_count: 34 },
-  { id: "y-te", name: "Y tế", book_count: 23 },
-  { id: "the-thao", name: "Thể thao", book_count: 12 },
-  { id: "am-nhac", name: "Âm nhạc", book_count: 18 }
-];
+interface CategoryItem {
+  id: string;
+  name: string;
+  book_count: number;
+}
+
+const fetchCategories = async (): Promise<CategoryItem[]> => {
+  try {
+    const res = await fetch('/api/books/categories');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
+    }
+  } catch (e) {
+    console.error('Failed to fetch categories:', e);
+  }
+  return [];
+};
 
 const languages = [
-  { id: "vi", name: "Tiếng Việt" },
-  { id: "en", name: "Tiếng Anh" },
-  { id: "fr", name: "Tiếng Pháp" },
-  { id: "de", name: "Tiếng Đức" },
-  { id: "ja", name: "Tiếng Nhật" },
-  { id: "ko", name: "Tiếng Hàn" },
-  { id: "zh", name: "Tiếng Trung" }
+  { id: "all", name: "Tất cả ngôn ngữ" },
+  { id: "Tiếng Việt", name: "Tiếng Việt" },
+  { id: "Tiếng Anh", name: "Tiếng Anh" },
+  { id: "Khác", name: "Khác" }
 ];
 
 const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
@@ -253,6 +255,12 @@ export default function BooksPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+
+  // Load categories from database
+  useEffect(() => {
+    fetchCategories().then(data => setCategories(data));
+  }, []);
 
   // Load books
   useEffect(() => {
@@ -264,11 +272,7 @@ export default function BooksPage() {
           filters,
           page: currentPage
         });
-        if (currentPage === 1) {
-          setBooks(result.items);
-        } else {
-          setBooks(prev => [...prev, ...result.items]);
-        }
+        setBooks(result.items);
         setTotalPages(result.total_pages);
         setTotalBooks(result.total);
       } catch (error) {
@@ -369,7 +373,6 @@ export default function BooksPage() {
                       <SelectValue placeholder="Ngôn ngữ" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem key="all-language" value="all">Tất cả ngôn ngữ</SelectItem>
                       {languages.map((lang) => (
                         <SelectItem key={lang.id} value={lang.id}>
                           {lang.name}
@@ -502,12 +505,17 @@ export default function BooksPage() {
             </div>
           )}
 
-          {/* Xem thêm */}
-          {!isLoading && books.length < totalBooks && (
-            <div className="flex justify-center mt-6">
-              <Button onClick={() => setCurrentPage(prev => prev + 1)}>
-                Xem thêm
-              </Button>
+          {/* Phân trang */}
+          {!isLoading && books.length > 0 && (
+            <div className="mt-8 pt-4 border-t">
+              <AppPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalBooks}
+                itemsPerPage={20}
+                itemName="đầu sách"
+                onPageChange={(p) => setCurrentPage(p)}
+              />
             </div>
           )}
         </div>

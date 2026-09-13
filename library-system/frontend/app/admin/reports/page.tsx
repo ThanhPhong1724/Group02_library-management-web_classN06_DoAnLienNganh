@@ -41,6 +41,7 @@ import {
   Legend,
 } from 'chart.js';
 import * as XLSX from 'xlsx';
+// @ts-ignore
 import { saveAs } from 'file-saver';
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -58,20 +59,37 @@ interface TopBook {
   id: number;
   title: string;
   authors: string;
-  loan_count: number;
+  loan_count?: number;
+  loanCount?: number;
+  returnRate?: number;
 }
 interface TopUser {
   id: number;
-  full_name: string;
+  full_name?: string;
+  name?: string;
   email: string;
-  user_type: string;
-  loan_count: number;
+  user_type?: string;
+  loan_count?: number;
+  loanCount?: number;
+  overdueCount?: number;
+  overdue_count?: number;
 }
 interface TopOverdueBook {
   id: number;
   title: string;
   authors: string;
   overdue_count: number;
+}
+interface ReportData {
+  period?: string;
+  totalLoans: number;
+  totalReturns: number;
+  totalOverdue: number;
+  totalUsers: number;
+  totalBooks: number;
+  totalCopies: number;
+  revenue: number;
+  fines: number;
 }
 interface FineStat {
   date: string;
@@ -388,7 +406,7 @@ const TopUsersTable = ({ users }: { users: TopUser[] }) => (
             <div className="text-right">
               <div className="font-medium text-sm">{user.loanCount} lượt mượn</div>
               <div className="text-xs text-muted-foreground">
-                {user.overdueCount > 0 ? (
+                {(user.overdueCount ?? 0) > 0 ? (
                   <span className="text-red-600">Quá hạn: {user.overdueCount}</span>
                 ) : (
                   <span className="text-green-600">Không quá hạn</span>

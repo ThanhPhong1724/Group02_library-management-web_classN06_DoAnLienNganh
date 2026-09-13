@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { AppPagination } from '@/components/ui/app-pagination';
 import { 
   Copy, 
   Search, 
@@ -133,7 +133,8 @@ export default function AdminCopiesPage() {
   useEffect(() => {
     const loadCopies = async () => {
       setIsLoading(true);
-      const res = await copiesAPI.getAll(currentPage, 12, undefined, undefined, search);
+      const pageSize = 15;
+      const res = await copiesAPI.getAll(currentPage, pageSize, undefined, undefined, search);
       if (res.success && res.data && Array.isArray(res.data.items)) {
         const mappedItems: BookCopy[] = res.data.items.map((item: any) => ({
           id: item.id ?? 0,
@@ -150,12 +151,8 @@ export default function AdminCopiesPage() {
           updated_at: item.updated_at ?? '',
           primary_image_url: item.primary_image_url ?? '',
         }));
-        if (currentPage === 1) {
-          setCopies(mappedItems);
-        } else {
-          setCopies((prev: BookCopy[]) => [...prev, ...mappedItems]);
-        }
-        setTotalPages(Math.ceil((res.data.total ?? mappedItems.length) / 12));
+        setCopies(mappedItems);
+        setTotalPages(Math.ceil((res.data.total ?? mappedItems.length) / pageSize));
         setTotalCopies(res.data.total ?? mappedItems.length);
       } else {
         setCopies([]);
@@ -168,15 +165,6 @@ export default function AdminCopiesPage() {
     loadCopies();
     // eslint-disable-next-line
   }, [search, currentPage, reloadFlag]);
-
-  // Thay đổi: bỏ phân trang số, thêm nút Xem thêm
-  {!isLoading && copies.length < totalCopies && (
-    <div className="flex justify-center mt-6">
-      <Button onClick={() => setCurrentPage((prev: number) => prev + 1)}>
-        Xem thêm
-      </Button>
-    </div>
-  )}
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -360,75 +348,19 @@ export default function AdminCopiesPage() {
             </CardContent>
           </Card>
 
-          {/* Pagination */}
-          {/* Sửa: bỏ phân trang số, thêm nút Xem thêm */}
-          {/* <div className="flex justify-center">
-            <Pagination>
-              <PaginationContent className="gap-x-2">
-                <PaginationItem>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50 px-2' : 'cursor-pointer px-2'}
-                    aria-label="Previous"
-                  >
-                    {'<'}
-                  </button>
-                </PaginationItem>
-                {totalPages <= 3 ? (
-                  Array.from({ length: totalPages }, (_, i) => (
-                    <PaginationItem key={`page-${i+1}`}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(i+1)}
-                        isActive={currentPage === i+1}
-                        className="cursor-pointer"
-                      >
-                        {i+1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))
-                ) : (
-                  <>
-                    <PaginationItem key="page-1">
-                      <PaginationLink onClick={() => setCurrentPage(1)} isActive={currentPage === 1} className="cursor-pointer">1</PaginationLink>
-                    </PaginationItem>
-                    {currentPage === 2 && (
-                      <PaginationItem key="page-2">
-                        <PaginationLink onClick={() => setCurrentPage(2)} isActive={currentPage === 2} className="cursor-pointer">2</PaginationLink>
-                      </PaginationItem>
-                    )}
-                    {currentPage > 3 && (
-                      <PaginationItem key="start-ellipsis"><PaginationEllipsis /></PaginationItem>
-                    )}
-                    {currentPage > 2 && currentPage < totalPages - 1 && (
-                      <PaginationItem key={`page-${currentPage}`}>
-                        <PaginationLink onClick={() => setCurrentPage(currentPage)} isActive className="cursor-pointer">{currentPage}</PaginationLink>
-                      </PaginationItem>
-                    )}
-                    {currentPage === totalPages - 1 && totalPages > 3 && (
-                      <PaginationItem key={`page-${totalPages-1}`}>
-                        <PaginationLink onClick={() => setCurrentPage(totalPages-1)} isActive={currentPage === totalPages-1} className="cursor-pointer">{totalPages-1}</PaginationLink>
-                      </PaginationItem>
-                    )}
-                    {currentPage < totalPages - 2 && (
-                      <PaginationItem key="end-ellipsis"><PaginationEllipsis /></PaginationItem>
-                    )}
-                    <PaginationItem key={`page-${totalPages}`}>
-                      <PaginationLink onClick={() => setCurrentPage(totalPages)} isActive={currentPage === totalPages} className="cursor-pointer">{totalPages}</PaginationLink>
-                    </PaginationItem>
-                  </>
-                )}
-                <PaginationItem>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50 px-2' : 'cursor-pointer px-2'}
-                    aria-label="Next"
-                  >
-                    {'>'}
-                  </button>
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div> */}
+          {/* Phân trang */}
+          {!isLoading && copies.length > 0 && (
+            <div className="mt-6 pt-4 border-t">
+              <AppPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalCopies}
+                itemsPerPage={15}
+                itemName="bản sao"
+                onPageChange={(p) => setCurrentPage(p)}
+              />
+            </div>
+          )}
         </div>
       </div>
 

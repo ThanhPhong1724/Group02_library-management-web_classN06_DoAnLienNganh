@@ -1,0 +1,7 @@
+tieu_de,danh_muc,trang_thai,muc_do,doi_tuong,so_tien_phat,loai_phat
+Không nói chuyện trong thư viện,behavior,active,medium,all,50000,fine
+Trả sách đúng hạn,borrowing,active,high,all,2000,fine
+Không mang đồ ăn thức uống vào thư viện,behavior,active,low,all,,none
+Không sử dụng điện thoại trong phòng đọc,behavior,active,medium,all,,warning
+Không tự ý di chuyển sách,general,active,medium,all,,none
+Không làm hỏng sách,penalty,active,high,all,100000,fine
