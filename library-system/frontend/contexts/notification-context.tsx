@@ -49,6 +49,29 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchNotifications();
     refetchUnreadCount();
+
+    const handleUpdate = () => {
+      fetchNotifications();
+      refetchUnreadCount();
+    };
+
+    window.addEventListener('notification_updated', handleUpdate);
+    window.addEventListener('loan_updated', handleUpdate);
+    window.addEventListener('library:notification_updated', handleUpdate);
+    window.addEventListener('library:loan_updated', handleUpdate);
+
+    // Auto polling mỗi 15s để bắt kịp thông báo từ admin/user khác
+    const interval = setInterval(() => {
+      refetchUnreadCount();
+    }, 15000);
+
+    return () => {
+      window.removeEventListener('notification_updated', handleUpdate);
+      window.removeEventListener('loan_updated', handleUpdate);
+      window.removeEventListener('library:notification_updated', handleUpdate);
+      window.removeEventListener('library:loan_updated', handleUpdate);
+      clearInterval(interval);
+    };
   }, [fetchNotifications, refetchUnreadCount]);
 
   return (

@@ -39,6 +39,7 @@ class CopyListResponse(BaseModel):
 
 @router.post("")
 def create_copy(payload: CopyCreate, db: Session = Depends(get_db)):
+    from .loans import sync_book_stock
     # Ensure book and location exist
     if not db.get(Book, payload.book_id):
         raise HTTPException(status_code=400, detail={"error": {"code": "INVALID_BOOK", "message": "Book not found", "details": {}}})
@@ -51,6 +52,7 @@ def create_copy(payload: CopyCreate, db: Session = Depends(get_db)):
 
     c = Copy(id_sach=payload.book_id, ma_ban_sao=payload.copy_code, id_vi_tri=payload.location_id)
     db.add(c)
+    sync_book_stock(db, payload.book_id)
     db.commit()
     db.refresh(c)
     return {"id": c.id}
@@ -58,6 +60,7 @@ def create_copy(payload: CopyCreate, db: Session = Depends(get_db)):
 
 @router.patch("/{copy_id}")
 def patch_copy(copy_id: int, payload: CopyPatch, db: Session = Depends(get_db)):
+    from .loans import sync_book_stock
     c = db.get(Copy, copy_id)
     if not c:
         raise HTTPException(status_code=404, detail={"error": {"code": "NOT_FOUND", "message": "Copy not found", "details": {}}})
@@ -68,6 +71,7 @@ def patch_copy(copy_id: int, payload: CopyPatch, db: Session = Depends(get_db)):
     if payload.status is not None:
         c.trang_thai = payload.status
     db.add(c)
+    sync_book_stock(db, c.id_sach)
     db.commit()
     db.refresh(c)
     return {"ok": True}

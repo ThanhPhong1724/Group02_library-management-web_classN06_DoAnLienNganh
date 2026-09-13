@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,7 @@ import {
 import { DefaultLayout } from '@/components/layout/default-layout';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { relative } from 'path';
+import { emitAppEvent, useAppEvent, APP_EVENTS } from '@/lib/events';
 // import { useDebounce } from '@/lib/hooks/useDebounce';
 
 // Types
@@ -48,7 +48,7 @@ interface Loan {
   loan_date: string;
   due_date: string;
   return_date?: string;
-  status: 'borrowed' | 'returned' | 'overdue' | 'reserved' | 'cancelled' | 'requested' | 'return_requested';
+  status: 'borrowed' | 'returned' | 'overdue' | 'reserved' | 'cancelled' | 'requested' | 'return_requested' | 'rejected';
   fine_amount?: number;
   fine_note?: string;
   fine_paid?: boolean;
@@ -332,6 +332,8 @@ const StatusBadge = ({ status }: { status: string }) => {
         return { label: 'Đã yêu cầu', className: 'bg-yellow-100 text-yellow-800', icon: Eye };
       case 'return_requested':
         return { label: 'Đã yêu cầu trả', className: 'bg-orange-100 text-orange-800', icon: Clock };
+      case 'rejected':
+        return { label: 'Đã từ chối', className: 'bg-rose-100 text-rose-800', icon: XCircle };
       default:
         return { label: 'Không xác định', className: 'bg-gray-100 text-gray-800', icon: AlertCircle };
     }
@@ -349,7 +351,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 // Loan Card Component
-const LoanCard = ({ loan, onEdit, onDelete, onView, onApprove, onApproveReturn, onReject }: {
+const LoanCard = ({ loan, onEdit, onDelete, onView, onApprove, onApproveReturn, onReject, onPayFine }: {
   loan: Loan;
   onEdit: (loan: Loan) => void;
   onDelete: (loan: Loan) => void;
@@ -357,6 +359,7 @@ const LoanCard = ({ loan, onEdit, onDelete, onView, onApprove, onApproveReturn, 
   onApprove: (loan: Loan) => void;
   onApproveReturn: (loan: Loan) => void;
   onReject: (loan: Loan) => void;
+  onPayFine?: (loan: Loan) => void;
 }) => {
   const isOverdue = loan.status === 'overdue';
   const isReturned = loan.status === 'returned';
@@ -448,7 +451,8 @@ const LoanCard = ({ loan, onEdit, onDelete, onView, onApprove, onApproveReturn, 
                           if (res.ok) {
                             toast.success('Đã xác nhận nộp phạt!');
                             setShowApproveFineModal({ open: false, loan: null });
-                            if (typeof window !== 'undefined') window.location.reload();
+                            if (onPayFine) onPayFine(loan);
+                            emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: loan.id });
                           } else {
                             toast.error('Lỗi khi xác nhận nộp phạt');
                           }
@@ -595,32 +599,37 @@ export default function AdminLoansPage() {
   }, []);
 
   // Load loans
-  useEffect(() => {
-    const loadLoans = async () => {
-      try {
-        setIsLoading(true);
-        const result = await fetchLoans({
-          filters,
-          page: currentPage,
-          limit: 12
-        });
-        if (currentPage === 1) {
-          setLoans(result.items);
-        } else {
-          setLoans(prev => [...prev, ...result.items]);
-        }
-        setTotalPages(result.total_pages);
-        setTotalLoans(result.total);
-      } catch (error) {
-        toast.error('Không thể tải danh sách mượn trả');
-        console.error('Error loading loans:', error);
-      } finally {
-        setIsLoading(false);
+  const loadLoans = useCallback(async (silent = false) => {
+    try {
+      if (!silent) setIsLoading(true);
+      const result = await fetchLoans({
+        filters,
+        page: currentPage,
+        limit: 12
+      });
+      if (currentPage === 1) {
+        setLoans(result.items);
+      } else {
+        setLoans(prev => [...prev, ...result.items]);
       }
-    };
-
-    loadLoans();
+      setTotalPages(result.total_pages);
+      setTotalLoans(result.total);
+    } catch (error) {
+      if (!silent) toast.error('Không thể tải danh sách mượn trả');
+      console.error('Error loading loans:', error);
+    } finally {
+      if (!silent) setIsLoading(false);
+    }
   }, [filters, currentPage]);
+
+  useEffect(() => {
+    loadLoans();
+  }, [loadLoans]);
+
+  // Tự động re-sync danh sách mượn trả khi có bất kỳ thay đổi nào từ phía người dùng
+  useAppEvent(APP_EVENTS.LOAN_UPDATED, () => {
+    loadLoans(true);
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -751,54 +760,90 @@ export default function AdminLoansPage() {
   };
   const handleApproveSubmit = async () => {
     if (!approveDialog.loan || !dueDate) return;
+    const loanToApprove = approveDialog.loan;
+    const chosenDueDate = dueDate;
+    const snapshotLoans = [...loans];
+
+    // 0ms Optimistic UI: cập nhật ngay trên giao diện
+    setLoans(prev => prev.map(l => l.id === loanToApprove.id ? {
+      ...l,
+      status: 'borrowed',
+      due_date: chosenDueDate,
+      loan_date: new Date().toISOString(),
+    } : l));
+    setApproveDialog({ open: false, loan: null });
+    setDueDate('');
+
     setApproveLoading(true);
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`/api/admin/loans/${approveDialog.loan.id}/approve`, {
+      const res = await fetch(`/api/admin/loans/${loanToApprove.id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token,
         },
-        body: JSON.stringify({ due_at: dueDate }),
+        body: JSON.stringify({ due_at: chosenDueDate }),
       });
       if (!res.ok) throw new Error('Duyệt mượn thất bại');
       toast.success('Duyệt mượn thành công');
-      setApproveDialog({ open: false, loan: null });
-      setDueDate('');
-      setFilters(f => ({ ...f }));
+      emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: loanToApprove.id });
     } catch {
+      // Rollback nếu thất bại
+      setLoans(snapshotLoans);
       toast.error('Có lỗi khi duyệt mượn');
     } finally {
       setApproveLoading(false);
     }
   };
+
   const handleReject = (loan: Loan) => setRejectDialog({ open: true, loan });
   const handleRejectSubmit = async () => {
     if (!rejectDialog.loan || !rejectReason) return;
+    const loanToReject = rejectDialog.loan;
+    const reason = rejectReason;
+    const snapshotLoans = [...loans];
+
+    // 0ms Optimistic UI
+    setLoans(prev => prev.map(l => l.id === loanToReject.id ? {
+      ...l,
+      status: 'rejected',
+      notes: reason ? `Từ chối: ${reason}` : l.notes,
+    } : l));
+    setRejectDialog({ open: false, loan: null });
+    setRejectReason('');
+
     setRejectLoading(true);
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`/api/admin/loans/${rejectDialog.loan.id}/reject`, {
+      const res = await fetch(`/api/admin/loans/${loanToReject.id}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token,
         },
-        body: JSON.stringify({ reason: rejectReason }),
+        body: JSON.stringify({ reason }),
       });
       if (!res.ok) throw new Error('Từ chối thất bại');
       toast.success('Từ chối phiếu mượn thành công');
-      setRejectDialog({ open: false, loan: null });
-      setRejectReason('');
-      setFilters(f => ({ ...f }));
+      emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: loanToReject.id });
     } catch {
+      setLoans(snapshotLoans);
       toast.error('Có lỗi khi từ chối');
     } finally {
       setRejectLoading(false);
     }
   };
+
   const handleApproveReturn = async (loan: Loan) => {
+    const snapshotLoans = [...loans];
+    // 0ms Optimistic UI
+    setLoans(prev => prev.map(l => l.id === loan.id ? {
+      ...l,
+      status: 'returned',
+      return_date: new Date().toISOString(),
+    } : l));
+
     setApproveReturnLoading(true);
     try {
       const token = localStorage.getItem('access_token');
@@ -811,8 +856,9 @@ export default function AdminLoansPage() {
       });
       if (!res.ok) throw new Error('Duyệt trả thất bại');
       toast.success('Duyệt trả thành công');
-      setFilters(f => ({ ...f }));
+      emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: loan.id });
     } catch {
+      setLoans(snapshotLoans);
       toast.error('Có lỗi khi duyệt trả');
     } finally {
       setApproveReturnLoading(false);
@@ -985,6 +1031,7 @@ export default function AdminLoansPage() {
                   onApprove={handleApprove}
                   onApproveReturn={handleApproveReturn}
                   onReject={handleReject}
+                  onPayFine={(paidLoan) => setLoans(prev => prev.map(l => l.id === paidLoan.id ? { ...l, fine_paid: true, fine_paid_at: new Date().toISOString() } : l))}
                 />
               ))}
             </div>

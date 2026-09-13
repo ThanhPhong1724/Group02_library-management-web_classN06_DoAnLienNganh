@@ -1,4 +1,9 @@
+import os
+from pathlib import Path
+from typing import Optional
 from pydantic_settings import BaseSettings
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
@@ -6,7 +11,8 @@ class Settings(BaseSettings):
     app_name: str = "Library Management System"
     debug: bool = True
 
-    # Database Configuration
+    # Database Configuration (supports Neon PostgreSQL via DATABASE_URL or MySQL fallback)
+    database_url: Optional[str] = None
     mysql_user: str = "root"
     mysql_password: str = ""
     mysql_host: str = "127.0.0.1"
@@ -43,7 +49,7 @@ class Settings(BaseSettings):
     port: int = 8000
 
     class Config:
-        env_file = ".env"
+        env_file = str(BACKEND_DIR / ".env")
         case_sensitive = False
 
 

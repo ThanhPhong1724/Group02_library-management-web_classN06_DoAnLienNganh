@@ -28,7 +28,8 @@ import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Tabs as UITabs, TabsList as UITabsList, TabsTrigger as UITabsTrigger, TabsContent as UITabsContent } from '@/components/ui/tabs';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
+import { emitAppEvent, useAppEvent, APP_EVENTS } from '@/lib/events';
 
 // Types
 interface ProfileForm {
@@ -184,6 +185,13 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load profile data
+  const refreshLoans = useCallback(async () => {
+    try {
+      const loansData = await fetchUserLoans();
+      setLoans(loansData);
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const loadProfileData = async () => {
       try {
@@ -204,7 +212,20 @@ export default function ProfilePage() {
     };
 
     loadProfileData();
-  }, []);
+
+    const handleFocus = () => {
+      refreshLoans();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refreshLoans]);
+
+  // Tự động cập nhật danh sách mượn sách khi có sự kiện từ toàn hệ thống
+  useAppEvent(APP_EVENTS.LOAN_UPDATED, () => {
+    refreshLoans();
+  });
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -542,17 +563,23 @@ export default function ProfilePage() {
                                 <Badge className="bg-green-100 text-green-800">Đã nộp phạt</Badge>
                               ) : loan.status === 'borrowed' ? (
                                 <Button size="sm" variant="outline" onClick={async () => {
+                                  const snapshotLoans = [...loans];
+                                  // 0ms Optimistic UI
+                                  setLoans(prev => prev.map(l => l.id === loan.id ? { ...l, status: 'return_requested' } : l));
                                   try {
-                                    await fetch(`/api/loans/${loan.id}/request-return`, {
+                                    const res = await fetch(`/api/loans/${loan.id}/request-return`, {
                                       method: 'POST',
                                       headers: {
                                         'Content-Type': 'application/json',
                                         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                                       },
                                     });
+                                    if (!res.ok) throw new Error('Không thể gửi yêu cầu trả sách');
                                     toast.success('Đã gửi yêu cầu trả sách, chờ admin duyệt!');
-                                    setLoans(await fetchUserLoans());
+                                    emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: loan.id });
+                                    refreshLoans();
                                   } catch {
+                                    setLoans(snapshotLoans);
                                     toast.error('Không thể gửi yêu cầu trả sách');
                                   }
                                 }}>Yêu cầu trả sách</Button>

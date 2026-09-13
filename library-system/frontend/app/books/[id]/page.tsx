@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +27,7 @@ import {
 import { DefaultLayout } from '@/components/layout/default-layout';
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
+import { emitAppEvent, useAppEvent, APP_EVENTS } from '@/lib/events';
 
 // Types
 interface Book {
@@ -258,9 +259,9 @@ export default function BookDetailPage() {
     }
   }, [bookId, router]);
 
-  useEffect(() => {
-    const fetchLoans = async () => {
-      if (!isAuthenticated) return;
+  const fetchLoans = useCallback(async () => {
+    if (!isAuthenticated) return [];
+    try {
       const res = await fetch('/api/me/loans?status=requested,borrowed,return_requested', {
         headers: {
           'Content-Type': 'application/json',
@@ -270,10 +271,30 @@ export default function BookDetailPage() {
       if (res.ok) {
         const data = await res.json();
         setUserLoans(data);
+        return data;
       }
-    };
+    } catch (e) {
+      console.error('Error fetching loans:', e);
+    }
+    return [];
+  }, [isAuthenticated]);
+
+  useEffect(() => {
     fetchLoans();
-  }, [isAuthenticated, bookId]);
+  }, [fetchLoans, bookId]);
+
+  // Lắng nghe sự kiện đồng bộ toàn hệ thống (khi Admin duyệt/từ chối/nhận trả)
+  useAppEvent(APP_EVENTS.LOAN_UPDATED, async () => {
+    if (bookId) {
+      const [bookData, copiesData] = await Promise.all([
+        fetchBookDetail(bookId).catch(() => null),
+        fetchBookCopies(bookId).catch(() => null),
+        fetchLoans(),
+      ]);
+      if (bookData) setBook(bookData);
+      if (copiesData) setCopies(copiesData);
+    }
+  });
 
   // 2. Lấy policies từ API khi mount
   useEffect(() => {
@@ -289,7 +310,7 @@ export default function BookDetailPage() {
       .catch(() => {});
   }, []);
 
-  // 1. Sửa handleLoanRequest để hiển thị lỗi rõ ràng từ backend
+  // Xử lý yêu cầu mượn sách với Optimistic UI (0ms)
   const handleLoanRequest = async () => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để mượn sách");
@@ -300,13 +321,36 @@ export default function BookDetailPage() {
       toast.error("Hiện tại không còn bản sao nào khả dụng");
       return;
     }
+
+    const availableCopy = copies.find(copy => copy.status === 'available');
+    if (!availableCopy) {
+      toast.error("Không tìm thấy bản sao khả dụng");
+      return;
+    }
+
+    // Lưu snapshot trạng thái hiện tại để phục hồi nếu server từ chối
+    const snapshotLoans = [...userLoans];
+    const snapshotBook = { ...book };
+    const snapshotCopies = [...copies];
+
+    // 1. CẬP NHẬT GIAO DIỆN LẬP TỨC (0ms Optimistic UI)
+    const tempLoanId = -Date.now();
+    setUserLoans(prev => [
+      ...prev,
+      {
+        id: tempLoanId,
+        copy_id: availableCopy.id,
+        status: 'requested',
+      }
+    ]);
+    setBook(prev => prev ? {
+      ...prev,
+      available_copies: Math.max(0, prev.available_copies - 1)
+    } : null);
+    setCopies(prev => prev.map(c => c.id === availableCopy.id ? { ...c, status: 'reserved' } : c));
+
     try {
       setIsLoanLoading(true);
-      const availableCopy = copies.find(copy => copy.status === 'available');
-      if (!availableCopy) {
-        toast.error("Không tìm thấy bản sao khả dụng");
-        return;
-      }
       const response = await fetch('/api/loans/request', {
         method: 'POST',
         headers: {
@@ -317,7 +361,13 @@ export default function BookDetailPage() {
           copy_id: availableCopy.id
         }),
       });
+
       if (!response.ok) {
+        // Rollback ngay lập tức nếu server báo lỗi
+        setUserLoans(snapshotLoans);
+        setBook(snapshotBook);
+        setCopies(snapshotCopies);
+
         let errorMsg = 'Không thể tạo yêu cầu mượn sách';
         try {
           const errorData = await response.json();
@@ -326,15 +376,30 @@ export default function BookDetailPage() {
         toast.error(errorMsg);
         return;
       }
+
+      const newLoanData = await response.json();
       toast.success("Yêu cầu mượn sách đã được gửi thành công!");
-      // Reload data để cập nhật trạng thái
+      
+      // Đồng bộ ID phiếu mượn thật từ server
+      setUserLoans(prev => prev.map(l => l.id === tempLoanId ? { ...l, id: newLoanData.id } : l));
+
+      // Phát sự kiện toàn hệ thống (đồng bộ chuông thông báo, admin, profile)
+      emitAppEvent(APP_EVENTS.LOAN_UPDATED, { bookId, loanId: newLoanData.id });
+
+      // Làm mới dữ liệu nền đảm bảo tính toàn vẹn
       const [bookData, copiesData] = await Promise.all([
-        fetchBookDetail(bookId),
-        fetchBookCopies(bookId)
+        fetchBookDetail(bookId).catch(() => null),
+        fetchBookCopies(bookId).catch(() => null),
+        fetchLoans(),
       ]);
-      setBook(bookData);
-      setCopies(copiesData);
+      if (bookData) setBook(bookData);
+      if (copiesData) setCopies(copiesData);
+
     } catch (error: any) {
+      // Rollback nếu mất mạng hoặc có lỗi
+      setUserLoans(snapshotLoans);
+      setBook(snapshotBook);
+      setCopies(snapshotCopies);
       console.error('Loan request error:', error);
       toast.error(error?.message || "Có lỗi xảy ra khi mượn sách");
     } finally {
@@ -392,8 +457,11 @@ export default function BookDetailPage() {
     );
   }
 
-  // Trong sidebar, xác định trạng thái mượn/trả của user với bản sao này
-  const currentLoan = userLoans.find(l => copies.some(c => c.id === l.copy_id));
+  // Trong sidebar, xác định trạng thái mượn/trả của user với bản sao này (chỉ xét phiếu đang hoạt động)
+  const currentLoan = userLoans.find(l => 
+    ['requested', 'borrowed', 'return_requested'].includes(l.status) &&
+    copies.some(c => c.id === l.copy_id)
+  );
 
   return (
     <DefaultLayout>
@@ -690,24 +758,24 @@ export default function BookDetailPage() {
                       </Button>
                     ) : currentLoan?.status === 'borrowed' ? (
                       <Button className="w-full" onClick={async () => {
+                        const snapshotLoans = [...userLoans];
+                        // 0ms Optimistic UI: đổi trạng thái nút ngay lập tức
+                        setUserLoans(prev => prev.map(l => l.id === currentLoan.id ? { ...l, status: 'return_requested' } : l));
                         try {
-                          await fetch(`/api/loans/${currentLoan.id}/request-return`, {
+                          const res = await fetch(`/api/loans/${currentLoan.id}/request-return`, {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',
                               'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                             },
                           });
+                          if (!res.ok) throw new Error('Yêu cầu trả thất bại');
                           toast.success('Đã gửi yêu cầu trả sách, chờ admin duyệt!');
-                          // reload userLoans
-                          const res = await fetch('/api/me/loans?status=requested,borrowed,return_requested', {
-                            headers: {
-                              'Content-Type': 'application/json',
-                              'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                            },
-                          });
-                          if (res.ok) setUserLoans(await res.json());
+                          emitAppEvent(APP_EVENTS.LOAN_UPDATED, { loanId: currentLoan.id });
+                          await fetchLoans();
                         } catch {
+                          // Rollback nếu thất bại
+                          setUserLoans(snapshotLoans);
                           toast.error('Không thể gửi yêu cầu trả sách');
                         }
                       }}>

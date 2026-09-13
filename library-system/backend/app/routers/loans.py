@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models.copy import Copy
+from ..models.location import Location
 from ..models.loan import Loan
 from ..models.policy import Policy  # Giả sử Policy là model cho bảng chinh_sach
 from ..models.user import User
@@ -16,6 +17,30 @@ from ..schemas.loans import AdminApproveLoan, AdminRejectLoan, LoanRequest, Admi
 from ..models.misc import create_notification
 
 router = APIRouter(prefix="", tags=["loans"])
+
+
+def to_naive_utc(dt: Optional[datetime]) -> Optional[datetime]:
+    if dt is None:
+        return None
+    if getattr(dt, "tzinfo", None) is not None:
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
+    return dt
+
+
+def sync_book_stock(db: Session, book_id: int):
+    if not book_id:
+        return
+    db.flush()
+    avail = db.execute(
+        select(func.count(Copy.id)).where(Copy.id_sach == book_id, Copy.trang_thai == "available")
+    ).scalar() or 0
+    total = db.execute(
+        select(func.count(Copy.id)).where(Copy.id_sach == book_id)
+    ).scalar() or 0
+    db.execute(
+        update(Book).where(Book.id == book_id).values(so_luong_con=avail, so_luong_tong=total)
+    )
+
 
 
 @router.post("/loans/request")
@@ -53,6 +78,7 @@ def request_loan(payload: LoanRequest, user: CurrentUser = Depends(get_current_u
     c.trang_thai = "reserved"
     db.add(loan)
     db.add(c)
+    sync_book_stock(db, c.id_sach)
     db.commit()
     db.refresh(loan)
     # Gửi thông báo cho admin
@@ -236,9 +262,10 @@ def admin_approve(loan_id: int, payload: AdminApproveLoan, user: CurrentUser = D
     loan.nguoi_duyet = user.user_id
     loan.duyet_luc = borrow_date
     loan.muon_luc = borrow_date
-    loan.han_tra = due_date
+    loan.han_tra = to_naive_utc(due_date)
     copy.trang_thai = "on_loan"
     db.add_all([loan, copy])
+    sync_book_stock(db, copy.id_sach)
     db.commit()
     # Gửi thông báo cho người mượn
     create_notification(db, loan.id_nguoi_dung, "loan_approved", "Yêu cầu mượn sách đã được duyệt", f"Yêu cầu mượn sách của bạn đã được duyệt. Hạn trả: {loan.han_tra.strftime('%d/%m/%Y') if loan.han_tra else ''}")
@@ -261,6 +288,7 @@ def admin_reject(loan_id: int, payload: AdminRejectLoan, user: CurrentUser = Dep
     loan.duyet_luc = datetime.utcnow()
     copy.trang_thai = "available"
     db.add_all([loan, copy])
+    sync_book_stock(db, copy.id_sach)
     db.commit()
     # Gửi thông báo cho người mượn
     create_notification(db, loan.id_nguoi_dung, "loan_rejected", "Yêu cầu mượn sách bị từ chối", f"Yêu cầu mượn sách của bạn đã bị từ chối. Lý do: {payload.reason}")
@@ -282,8 +310,10 @@ def admin_approve_return(loan_id: int, user: CurrentUser = Depends(get_current_u
     loan.tra_luc = datetime.utcnow()
     copy.trang_thai = "available"
     # Tính phạt nếu trả trễ
-    if loan.han_tra and loan.tra_luc and loan.tra_luc > loan.han_tra:
-        days_late = (loan.tra_luc - loan.han_tra).days
+    tra_luc_naive = to_naive_utc(loan.tra_luc)
+    han_tra_naive = to_naive_utc(loan.han_tra)
+    if han_tra_naive and tra_luc_naive and tra_luc_naive > han_tra_naive:
+        days_late = (tra_luc_naive - han_tra_naive).days
         borrower = db.get(User, loan.id_nguoi_dung)
         user_type = getattr(borrower, "loai_nguoi_dung", "student")
         fine_per_day = db.execute(
@@ -295,6 +325,7 @@ def admin_approve_return(loan_id: int, user: CurrentUser = Depends(get_current_u
         loan.so_tien_phat = 0
         loan.noi_dung_phat = None
     db.add_all([loan, copy])
+    sync_book_stock(db, copy.id_sach)
     db.commit()
     # Gửi thông báo cho người mượn
     if loan.so_tien_phat and loan.so_tien_phat > 0:
@@ -316,15 +347,24 @@ def admin_create_loan(payload: AdminLoanCreate, user: CurrentUser = Depends(get_
     borrower = db.get(User, payload.user_id)
     if not borrower:
         raise HTTPException(status_code=400, detail="User not found")
+    st = payload.status or "requested"
     loan = Loan(
         id_ban_sao=payload.copy_id,
         id_nguoi_dung=payload.user_id,
-        trang_thai=payload.status or "requested",
-        han_tra=datetime.fromisoformat(payload.due_at) if payload.due_at else None,
-        muon_luc=datetime.fromisoformat(payload.borrowed_at) if payload.borrowed_at else None,
-        tra_luc=datetime.fromisoformat(payload.returned_at) if payload.returned_at else None,
+        trang_thai=st,
+        han_tra=to_naive_utc(datetime.fromisoformat(payload.due_at.replace("Z", "+00:00"))) if payload.due_at else None,
+        muon_luc=to_naive_utc(datetime.fromisoformat(payload.borrowed_at.replace("Z", "+00:00"))) if payload.borrowed_at else None,
+        tra_luc=to_naive_utc(datetime.fromisoformat(payload.returned_at.replace("Z", "+00:00"))) if payload.returned_at else None,
     )
+    if st in ["borrowed", "overdue"]:
+        copy.trang_thai = "on_loan"
+    elif st == "reserved":
+        copy.trang_thai = "reserved"
+    elif st in ["returned", "rejected"]:
+        copy.trang_thai = "available"
     db.add(loan)
+    db.add(copy)
+    sync_book_stock(db, copy.id_sach)
     db.commit()
     db.refresh(loan)
     # Trả về thông tin đầy đủ
@@ -370,11 +410,22 @@ def admin_update_loan(loan_id: int, payload: AdminLoanUpdate, user: CurrentUser 
         raise HTTPException(status_code=404, detail="Loan not found")
     if payload.status:
         loan.trang_thai = payload.status
+        copy = db.get(Copy, loan.id_ban_sao)
+        if copy:
+            if payload.status in ["borrowed", "overdue"]:
+                copy.trang_thai = "on_loan"
+            elif payload.status in ["returned", "rejected"]:
+                copy.trang_thai = "available"
+            elif payload.status == "requested":
+                copy.trang_thai = "reserved"
+            db.add(copy)
+            sync_book_stock(db, copy.id_sach)
         # Tự động tính phạt nếu chuyển sang overdue
         if payload.status == "overdue" and loan.han_tra:
             now = datetime.utcnow()
-            if now > loan.han_tra:
-                days_late = (now - loan.han_tra).days
+            han_tra_naive = to_naive_utc(loan.han_tra)
+            if han_tra_naive and now > han_tra_naive:
+                days_late = (now - han_tra_naive).days
                 borrower = db.get(User, loan.id_nguoi_dung)
                 user_type = getattr(borrower, "loai_nguoi_dung", "student")
                 fine_per_day = db.execute(
@@ -391,11 +442,11 @@ def admin_update_loan(loan_id: int, payload: AdminLoanUpdate, user: CurrentUser 
                 loan.so_tien_phat = 0
                 loan.noi_dung_phat = None
     if payload.due_at:
-        loan.han_tra = datetime.fromisoformat(payload.due_at)
+        loan.han_tra = to_naive_utc(datetime.fromisoformat(payload.due_at.replace("Z", "+00:00")))
     if payload.borrowed_at:
-        loan.muon_luc = datetime.fromisoformat(payload.borrowed_at)
+        loan.muon_luc = to_naive_utc(datetime.fromisoformat(payload.borrowed_at.replace("Z", "+00:00")))
     if payload.returned_at:
-        loan.tra_luc = datetime.fromisoformat(payload.returned_at)
+        loan.tra_luc = to_naive_utc(datetime.fromisoformat(payload.returned_at.replace("Z", "+00:00")))
     if payload.fine_amount is not None:
         loan.so_tien_phat = payload.fine_amount
     if payload.fine_note is not None:
@@ -403,7 +454,7 @@ def admin_update_loan(loan_id: int, payload: AdminLoanUpdate, user: CurrentUser 
     if payload.fine_paid is not None:
         loan.da_nop_phat = payload.fine_paid
         if payload.fine_paid:
-            loan.ngay_nop_phat = payload.fine_paid_at or datetime.utcnow()
+            loan.ngay_nop_phat = to_naive_utc(payload.fine_paid_at) or datetime.utcnow()
             loan.admin_xac_nhan_phat = user.user_id
             # Gửi thông báo xác nhận đã nộp phạt
             create_notification(db, loan.id_nguoi_dung, "fine_confirmed", "Xác nhận đã nộp phạt", "Tiền phạt của bạn đã được xác nhận. Cảm ơn bạn!")
@@ -515,13 +566,15 @@ def admin_reports_overview(user: CurrentUser = Depends(get_current_user), db: Se
     overdue_loans = db.execute(select(Loan.muon_luc, Loan.han_tra, Loan.tra_luc, Loan.id_nguoi_dung).where(Loan.trang_thai.in_(["overdue", "returned"]))).all()
     total_fines = 0
     for muon_luc, han_tra, tra_luc, user_id in overdue_loans:
-        if not han_tra: continue
-        if tra_luc and tra_luc > han_tra:
-            days_late = (tra_luc - han_tra).days
-        elif not tra_luc:
+        han_tra_naive = to_naive_utc(han_tra)
+        tra_luc_naive = to_naive_utc(tra_luc)
+        if not han_tra_naive: continue
+        if tra_luc_naive and tra_luc_naive > han_tra_naive:
+            days_late = (tra_luc_naive - han_tra_naive).days
+        elif not tra_luc_naive:
             now = datetime.utcnow()
-            if now > han_tra:
-                days_late = (now - han_tra).days
+            if now > han_tra_naive:
+                days_late = (now - han_tra_naive).days
             else:
                 days_late = 0
         else:
@@ -669,21 +722,23 @@ def admin_reports_fines(
     rows = db.execute(stmt).all()
     fines_by = {}
     for muon_luc, han_tra, tra_luc, user_id in rows:
-        if not han_tra: continue
-        if tra_luc and tra_luc > han_tra:
-            days_late = (tra_luc - han_tra).days
-            fine_date = tra_luc
-        elif not tra_luc:
+        han_tra_naive = to_naive_utc(han_tra)
+        tra_luc_naive = to_naive_utc(tra_luc)
+        if not han_tra_naive: continue
+        if tra_luc_naive and tra_luc_naive > han_tra_naive:
+            days_late = (tra_luc_naive - han_tra_naive).days
+            fine_date = tra_luc_naive
+        elif not tra_luc_naive:
             now = datetime.utcnow()
-            if now > han_tra:
-                days_late = (now - han_tra).days
+            if now > han_tra_naive:
+                days_late = (now - han_tra_naive).days
                 fine_date = now
             else:
                 days_late = 0
-                fine_date = han_tra
+                fine_date = han_tra_naive
         else:
             days_late = 0
-            fine_date = han_tra
+            fine_date = han_tra_naive
         if days_late > 0:
             user = db.get(User, user_id)
             user_type = getattr(user, "loai_nguoi_dung", "student")
@@ -708,27 +763,35 @@ def admin_reports_loans_by_month(
 ):
     if user.role.lower() != "admin":
         raise HTTPException(status_code=403, detail={"error": {"code": "FORBIDDEN", "message": "Admin only", "details": {}}})
+    dialect_name = db.bind.dialect.name if db.bind else "postgresql"
+    if dialect_name == "postgresql":
+        month_borrow_expr = func.to_char(Loan.muon_luc, 'YYYY-MM')
+        month_return_expr = func.to_char(Loan.tra_luc, 'YYYY-MM')
+    else:
+        month_borrow_expr = func.date_format(Loan.muon_luc, '%Y-%m')
+        month_return_expr = func.date_format(Loan.tra_luc, '%Y-%m')
+
     # Lượt mượn theo tháng
     stmt_borrow = select(
-        func.date_format(Loan.muon_luc, '%Y-%m').label('month'),
+        month_borrow_expr.label('month'),
         func.count(Loan.id).label('borrow_count')
     ).where(Loan.muon_luc != None)
     if from_date:
         stmt_borrow = stmt_borrow.where(Loan.muon_luc >= from_date)
     if to_date:
         stmt_borrow = stmt_borrow.where(Loan.muon_luc <= to_date)
-    stmt_borrow = stmt_borrow.group_by('month').order_by('month')
+    stmt_borrow = stmt_borrow.group_by(month_borrow_expr).order_by(month_borrow_expr)
     borrow_data = db.execute(stmt_borrow).all()
     # Lượt trả theo tháng
     stmt_return = select(
-        func.date_format(Loan.tra_luc, '%Y-%m').label('month'),
+        month_return_expr.label('month'),
         func.count(Loan.id).label('return_count')
     ).where(Loan.tra_luc != None)
     if from_date:
         stmt_return = stmt_return.where(Loan.tra_luc >= from_date)
     if to_date:
         stmt_return = stmt_return.where(Loan.tra_luc <= to_date)
-    stmt_return = stmt_return.group_by('month').order_by('month')
+    stmt_return = stmt_return.group_by(month_return_expr).order_by(month_return_expr)
     return_data = db.execute(stmt_return).all()
     # Gộp dữ liệu
     result = {}

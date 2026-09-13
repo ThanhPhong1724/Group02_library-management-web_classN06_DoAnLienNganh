@@ -111,7 +111,7 @@ def get_book_detail(book_id: int, db: Session = Depends(get_db)) -> BookDetailRe
     ]
 
     copies_rows = db.execute(
-        select(Copy, Location).join(Location, Location.id == Copy.id_vi_tri).where(Copy.id_sach == book_id)
+        select(Copy, Location).join(Location, Location.id == Copy.id_vi_tri, isouter=True).where(Copy.id_sach == book_id)
     ).all()
     copies = [
         {
@@ -123,7 +123,7 @@ def get_book_detail(book_id: int, db: Session = Depends(get_db)) -> BookDetailRe
                 "code": l.ma_ke,
                 "room": l.phong,
                 "floor": l.tang,
-            },
+            } if l else None,
         }
         for c, l in copies_rows
     ]

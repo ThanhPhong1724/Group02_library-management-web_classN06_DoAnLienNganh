@@ -233,61 +233,63 @@ export function Header({ isDarkMode, onToggleDarkMode, onToggleSidebar }: Header
           </Button>
 
           {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" aria-label="Thông báo" className="relative">
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center animate-pulse">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-96 max-w-[95vw] p-0">
-              <div className="flex items-center justify-between px-4 py-2 border-b">
-                <span className="font-semibold text-base">Thông báo</span>
-                {unreadCount > 0 && (
-                  <button
-                    className="text-xs text-primary hover:underline"
-                    onClick={async (e) => { e.preventDefault(); await markAllRead(); }}
-                  >
-                    Đánh dấu tất cả đã đọc
-                  </button>
-                )}
-              </div>
-              <div className="max-h-96 overflow-y-auto divide-y">
-                {loading ? (
-                  <div className="p-4 text-center text-muted-foreground">Đang tải...</div>
-                ) : notifications.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground">Không có thông báo nào.</div>
-                ) : notifications.slice(0, 10).map((n) => (
-                  <div
-                    key={n.id}
-                    className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-accent transition-all ${!n.is_read ? 'bg-blue-50 dark:bg-blue-950/40' : ''}`}
-                    onClick={async () => { if (!n.is_read) await markRead(n.id); }}
-                  >
-                    <div className="flex-shrink-0 mt-1">
-                      <Bell className={`h-5 w-5 ${n.is_read ? 'text-muted-foreground' : 'text-primary'}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className={`font-medium ${!n.is_read ? 'text-primary' : ''}`}>{n.title}</div>
-                      {n.body && <div className="text-sm text-muted-foreground line-clamp-2">{n.body}</div>}
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: vi })}
-                        {!n.is_read && <span className="ml-2 inline-block bg-primary text-primary-foreground rounded px-1 text-xs">Mới</span>}
+          {isAuthenticated && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label="Thông báo" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center animate-pulse">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-96 max-w-[95vw] p-0">
+                <div className="flex items-center justify-between px-4 py-2 border-b">
+                  <span className="font-semibold text-base">Thông báo</span>
+                  {unreadCount > 0 && (
+                    <button
+                      className="text-xs text-primary hover:underline"
+                      onClick={async (e) => { e.preventDefault(); await markAllRead(); }}
+                    >
+                      Đánh dấu tất cả đã đọc
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-96 overflow-y-auto divide-y">
+                  {loading ? (
+                    <div className="p-4 text-center text-muted-foreground">Đang tải...</div>
+                  ) : notifications.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground">Không có thông báo nào.</div>
+                  ) : notifications.slice(0, 10).map((n) => (
+                    <div
+                      key={n.id}
+                      className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-accent transition-all ${!n.is_read ? 'bg-blue-50 dark:bg-blue-950/40' : ''}`}
+                      onClick={async () => { if (!n.is_read) await markRead(n.id); }}
+                    >
+                      <div className="flex-shrink-0 mt-1">
+                        <Bell className={`h-5 w-5 ${n.is_read ? 'text-muted-foreground' : 'text-primary'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`font-medium ${!n.is_read ? 'text-primary' : ''}`}>{n.title}</div>
+                        {n.body && <div className="text-sm text-muted-foreground line-clamp-2">{n.body}</div>}
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: vi })}
+                          {!n.is_read && <span className="ml-2 inline-block bg-primary text-primary-foreground rounded px-1 text-xs">Mới</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                {notifications.length > 10 && (
-                  <div className="px-4 py-2 text-center">
-                    <Link href="/admin/notifications" className="text-primary hover:underline text-sm">Xem tất cả thông báo</Link>
-                  </div>
-                )}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  ))}
+                  {notifications.length > 10 && (
+                    <div className="px-4 py-2 text-center">
+                      <Link href="/admin/notifications" className="text-primary hover:underline text-sm">Xem tất cả thông báo</Link>
+                    </div>
+                  )}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* User Menu */}
           {isAuthenticated ? (
